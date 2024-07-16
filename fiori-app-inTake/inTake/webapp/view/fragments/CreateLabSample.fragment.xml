@@ -1,0 +1,86 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog class="sapUiSizeCompact" stretch="{device>/system/phone}" title="{i18n>CreateLabSamplePackage}" contentWidth="100%" draggable="true">
+		<content>
+			<VBox>
+				<FlexBox class="sapUiSmallMargin" width="95%" justifyContent="Center">
+					<FlexBox alignItems="Center">
+						<Text text="Location" class="sapUiSmallMarginBeginEnd"/>
+						<ComboBox id="temLocationId" selectedKey="{jsonModel>/temChangeLoc}" width="100%" items="{jsonModel>/harvestLocData}" busy="{jsonModel>/ComboBoxBusy}" >
+							<core:Item key="{jsonModel>WarehouseCode}" text="{jsonModel>WarehouseName}"/>
+						</ComboBox>
+					</FlexBox>
+					<FlexBox alignItems="Center">
+						<Text text="Required Test" class="sapUiSmallMarginBeginEnd"/>
+						<MultiComboBox id="temRequiredTestId" items="{jsonModel>/requiredTestsData}" selectedKeys="{jsonModel>/temNSRTD}" width="100%"
+							valueState="{jsonModel>STATUSLOC}" valueStateText="{jsonModel>LOCTXT}">
+							<core:Item key="{jsonModel>Code}" text="{jsonModel>Name}"/>
+						</MultiComboBox>
+					</FlexBox>
+					<FlexBox alignItems="Center">
+						<Button type="Emphasized" text="Apply" press="onCreateLabTemApply" class="sapUiSmallMarginBeginEnd"/>
+					</FlexBox>
+				</FlexBox>
+				<Table id="productsTable" inset="false" mode="None" items="{ path: 'jsonModel>/createLabPackageData'}" class="sapUiTinyMargin" width="auto"
+					fixedLayout="false">
+					<columns>
+						<Column width="2rem">
+							<Label text="SNO." design="Bold"/>
+						</Column>
+						<Column width="13rem">
+							<Label text="{i18n>Tag}" design="Bold"/>
+						</Column>
+						<Column width="8rem">
+							<Label text="{i18n>AvailableQuantity}" design="Bold"/>
+						</Column>
+						<Column width="6rem">
+							<Label text="{i18n>Quantity}" design="Bold"/>
+						</Column>
+						<Column width="10rem">
+							<Label text="{i18n>PackageTag}" design="Bold"/>
+						</Column>
+						<Column width="10rem">
+							<Label text="{i18n>Location}" design="Bold"/>
+						</Column>
+						<Column width="10rem">
+							<Label text="{i18n>Item}" design="Bold"/>
+						</Column>
+						<Column width="15rem">
+							<Label text="{i18n>RequiredTest}" design="Bold"/>
+						</Column>
+						<Column width="12%">
+							<Label text="" design="Bold"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{jsonModel>SNO}"/>
+								<Text text="{jsonModel>METRCUID}"/>
+								<Text text="{jsonModel>Quantity}"/>
+								<Input value="{jsonModel>NQNTY}" liveChange="validateEnteredQty" valueState="{jsonModel>STATUSQTY}" valueStateText="{jsonModel>QTYTXT}"/>
+								<Select items="{jsonModel>/harvestTagsData}" selectedKey="{jsonModel>NTRID}" change="tagSelectionChange" width="100%" forceSelection="false"
+									valueState="{jsonModel>STATUSTAG}" valueStateText="{jsonModel>TAGTXT}">
+									<core:Item key="{jsonModel>U_NMTTG}" text="{jsonModel>U_NMTTG}"/>
+								</Select>
+								<Select items="{jsonModel>/harvestLocData}" selectedKey="{jsonModel>NSTLN}" width="100%" forceSelection="false"  busy="{jsonModel>/ComboBoxBusy}"
+									valueState="{jsonModel>STATUSLOC}" valueStateText="{jsonModel>LOCTXT}">
+									<core:Item key="{jsonModel>WarehouseName}" text="{jsonModel>WarehouseName}"/>
+								</Select>
+								<Text width="100%" text="{jsonModel>NPDNMText}"/>
+								<MultiComboBox items="{jsonModel>/requiredTestsData}" selectedKeys="{jsonModel>NSRTD}" width="100%" valueState="{jsonModel>STATUSLOC}"
+									valueStateText="{jsonModel>LOCTXT}">
+									<core:Item key="{jsonModel>Code}" text="{jsonModel>Name}"/>
+								</MultiComboBox>
+								<Button icon="sap-icon://delete" press="oncreateLabDelete" type="Reject"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+		<beginButton><Button type="Emphasized" text="{i18n>CreateLabSample}" press="onConfirmCreateLabSample"/></beginButton>
+		<endButton>
+			<Button type="Transparent" text="{i18n>Cancel}" press="onCreateLabSampleClose"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

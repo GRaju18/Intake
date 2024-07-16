@@ -1,0 +1,28 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog class="sapUiSizeCompact" contentWidth="27rem" stretch="{device>/system/phone}" draggable="true" busy="{jsonModel>/busyView}">
+		<customHeader>
+			<Bar>
+				<contentMiddle>
+					 <VBox>
+					<Label text="Do you want to change growth phase for below package(s) ?" design="Bold" />
+					 </VBox>
+				</contentMiddle>
+			</Bar>
+		</customHeader>
+		<content>
+			<FlexBox direction="Column">
+			    <List items="{ path: 'jsonModel>/changegrowthphasedata'}">
+                    <items>
+                    	<StandardListItem title="{jsonModel>METRCUID}"/>
+                    </items>
+                </List>
+			</FlexBox>
+		</content>
+		<beginButton>
+			<Button type="Emphasized" text="Ok" press="onConfirmChangeGrowthPhase" />
+		</beginButton>
+		<endButton>
+			<Button type="Transparent" text="{i18n>Cancel}" press="onChangeGrowthPhaseClose"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

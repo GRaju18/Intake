@@ -1,0 +1,143 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form">
+	<Dialog class="sapUiSizeCompact" stretch="{device>/system/phone}" title="Transfer Template" draggable="true" resizable="true">
+		<content>
+			<VBox>
+				<f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+					adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="2"
+					singleContainerFullSize="false" class="noTitle">
+					<f:content>
+						<core:Title text=""/>
+						<Label text="{i18n>Customer}" required="false"/>
+						<ComboBox items="{jsonModel>/BPData}" selectedKey="{jsonModel>/transTemplate/customer}" width="100%" id="customer"
+							busy="{jsonModel>/BPDataBusy}" change="onCustomerSelect" valueState="{jsonModel>/valueStatecustomer}"
+							valueStateText="{jsonModel>/valueStateTextCustomer}">
+							<core:ListItem key="{jsonModel>CardCode}" text="{jsonModel>CardName} - {jsonModel>CardForeignName}"/>
+						</ComboBox>
+						<Label text="{i18n>SalesOrder}" required="false"/>
+						<ComboBox items="{jsonModel>/SalesOrderData}" id="salesOrder" selectedKey="{jsonModel>/transTemplate/salesOrder}" width="100%"
+							busy="{jsonModel>/orderDataBusy}" change="onSalesOrderSelect" valueState="{jsonModel>/valueStatesalesorder}"
+							valueStateText="{jsonModel>/valueStateTextsalesorder}">
+							<core:ListItem key="{jsonModel>DocNum}" text="{jsonModel>DocNum}"/>
+						</ComboBox>
+						<Label text="Ship to" required="false"/>
+						<Input value="{jsonModel>/shiptoInput}" selectedKey="{jsonModel>/transTemplate/shipinput}" valueState="{jsonModel>/valueStateshipinput}"
+							valueStateText="{jsonModel>/valueStateTextshipinput}"/>
+						<Label text="{i18n>TemplateName}" required="false"/>
+						<Input value="{jsonModel>/transTemplate/temName}" change="templateNameonchange" valueState="{jsonModel>/valueStatetemplatename}"
+							valueStateText="{jsonModel>/valueStateTextTemplatename}"/>
+						<Label text="{i18n>TranferType}" required="false"/>
+						<Select selectedKey="{jsonModel>/transTemplate/transType}" forceSelection="false" valueState="{jsonModel>/valueStatetemplattype}"
+							valueStateText="{jsonModel>/valueStateTextTemplatetype}">
+							<items>
+								<core:Item text="{i18n>Return}" key="Return"/>
+								<core:Item text="{i18n>StateAuthorized}" key="State Authorized"/>
+								<core:Item text="{i18n>Transfer}" key="Transfer"/>
+								<core:Item text="{i18n>WholesaleManifest}" key="Wholesale Manifest"/>
+							</items>
+						</Select>
+						<Label text="Est. Departure" required="false"/>
+						<DateTimePicker id="EstDeparture" valueState="{jsonModel>/transTemplate/valueStateestdeparture}" change="handleChange1"/>
+						<!-- Value="{path:'jsonModel>transTemplate/deliveryDate','type': 'sap.ui.model.type.DateTime','formatOptions': {strictParsing: true}}"/> -->
+						<!-- dateValue="{path:'jsonModel>transTemplate/deliveryDate',formatter:'.formatter.dateDisplayDepart'}}"/> -->
+						<Label text="Est. Arrival" required="false"/>
+						<DateTimePicker id="EstArrival" change="handleChange2" valueState="{jsonModel>/transTemplate/valueStateestarrrival}"/>
+						<!-- Value="{path:'jsonModel>transTemplate/arrivalDate','type': 'sap.ui.model.type.DateTime','formatOptions': {strictParsing: true}}"/> -->
+						<!-- dateValue="{path:'jsonModel>transTemplate/arrivalDate',formatter:'.formatter.dateDisplayArrial'}}"/> -->
+						<core:Title text=""/>
+						<Label text="Planned Route"/>
+						<TextArea rows="3" value="{jsonModel>/transTemplate/plannedRoute}" editable="true" valueState="{jsonModel>/valueStateplannedroute}"
+							valueStateText="{jsonModel>/valueStateTextplannedroute}"/>
+						<Label text="{i18n>Transporter}" required="false"/>
+						<Select items="{jsonModel>/TransporterData}" selectedKey="{jsonModel>/transTemplate/transporter}" width="100%" forceSelection="false"
+							busy="{jsonModel>/TransporterDataBusy}" id="transporter" change="onTransportChange" valueState="{jsonModel>/valueStatetranspoter}"
+							valueStateText="{jsonModel>/valueStateTexttranspoter}">
+							<core:ListItem key="{jsonModel>Code}" text="{jsonModel>Name}"/>
+						</Select>
+						<Label text="Driver" required="false"/>
+						<Select items="{jsonModel>/DriverData}" selectedKey="{jsonModel>/transTemplate/driverDetail}" valueState="{jsonModel>/valueStatedriver}"
+							valueStateText="{jsonModel>/valueStateTextdriver}" width="100%" forceSelection="true" busy="{jsonModel>/driverDataBusy}" id="driverDetails"
+							change="ondriverdetailsChange">
+							<core:ListItem key="{jsonModel>Code}" text="{jsonModel>Name}"/>
+						</Select>
+						<Label text="Phone No." required="false"/>
+						<Input value="{jsonModel>/driverDataphoneNUM}" valueState="{jsonModel>/transTemplate/valueStatephone}"
+							valueStateText="{jsonModel>/transTemplate/valueStateTextphone}"/>
+						<Label text="Vehicle" required="false"/>
+						<Select items="{jsonModel>/VehicleData}" valueState="{jsonModel>/valueStatevehicle}" valueStateText="{jsonModel>/valueStateTextvehicle}"
+							selectedKey="{jsonModel>/transTemplate/vehicleDetail}" width="100%" forceSelection="true" busy="{jsonModel>/vehicleDataBusy}"
+							id="vehicleDetails">
+							<core:ListItem key="{jsonModel>Code}" text="{jsonModel>Name}"/>
+						</Select>
+						<!--<core:Title text=""/>-->
+					</f:content>
+				</f:SimpleForm>
+			</VBox>
+			<VBox class="sapUiTinyMargin">
+				<Table id="lineTable" inset="false" mode="None" items="{path:'jsonModel>/TransferTemDocLines',factory:'.prepareListItem'}" width="100%"
+					busy="{jsonModel>/tableBusy}">
+					<columns>
+						<Column width="8%">
+							<Label text="{i18n>LineNum}" design="Bold"/>
+						</Column>
+						<Column width="30%">
+							<Label text="{i18n>Item}" design="Bold"/>
+						</Column>
+						<Column width="8%">
+							<Label text="{i18n>ReqQty}" design="Bold"/>
+						</Column>
+						<Column width="8%">
+							<Label text="{i18n>UOM}" design="Bold"/>
+						</Column>
+						<Column width="8%">
+							<Label text="{i18n>Price}" design="Bold"/>
+						</Column>
+						<Column width="30%">
+							<Label text="{i18n>Package}" design="Bold"/>
+						</Column>
+						<Column width="8%">
+							<Label text="{i18n>AvlQty}" design="Bold"/>
+						</Column>
+						<Column width="8%">
+							<Label text="Shipped Qty" design="Bold"/>
+						</Column>
+					</columns>
+					<!-- <items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{jsonModel>ItemCode} {jsonModel>ItemDescription}"/>
+								<Text text="{jsonModel>Quantity}"/>
+								<Text text="{jsonModel>UoMCode}"/>
+								<Text text="{jsonModel>UnitPrice}"/>
+								<Input value="{jsonModel>PACKAGE}" showSuggestion="true" valueState="{jsonModel>STATUS}" valueStateText="{jsonModel>STATUSTXT}"
+									suggest="onSuggestPackage" suggestionItemSelected="onSuggestPkgSelected" suggestionRows="{path:'/packagesData',templateShareable : true}"
+									showTableSuggestionValueHelp="false" enableTableAutoPopinMode="true">
+									<suggestionColumns>
+										<Column>
+											<Label text="Package"/>
+										</Column>
+										<Column>
+											<Label text="Qty"/>
+										</Column>
+									</suggestionColumns>
+									<suggestionRows>
+										<ColumnListItem>
+											<Label text="{BatchNum}"/>
+											<Label text="{Quantity}"/>
+										</ColumnListItem>
+									</suggestionRows>
+								</Input>
+								<Text text="{jsonModel>AQTY}"/>
+							</cells>
+						</ColumnListItem>
+					</items> -->
+				</Table>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button type="Emphasized" text="{i18n>SubmitTemplate}" press="onConfirmTemplateTranfer"/>
+		</beginButton>
+		<endButton>
+			<Button type="Transparent" text="{i18n>Cancel}" press="templateTransClose"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

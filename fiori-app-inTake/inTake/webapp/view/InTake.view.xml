@@ -1,0 +1,133 @@
+<mvc:View controllerName="com.9b.inTake.controller.InTake" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:f="sap.f"
+	xmlns:commons="sap.suite.ui.commons" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:table="sap.ui.table"
+	xmlns:fb="sap.ui.comp.filterbar" xmlns:tnt="sap.tnt">
+	<f:DynamicPage id="dynamicPageId" showFooter="true" class="dyPage custFDynamicPageTitle">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:content>
+					<FlexBox direction="Row" justifyContent="SpaceAround" alignItems="Center">
+						<Text text="{i18n>Navigateto}" width="5rem"></Text>
+						<Select id="navigate" width="14rem" change="onChanageNavigate" forceSelection="false">
+							<!--<core:Item key="Strain" text="{i18n>StrainList}"/>-->
+							<core:Item key="ClonePlanner" text="Immature Plants"/>
+							<!--<core:Item key="VegPlanner" text="{i18n>VegPlanner}"/>-->
+							<core:Item key="FlowerPlanner" text="Flower Plants"/>
+							<core:Item key="Harvest" text="Harvested"/>
+							<core:Item key="MotherPlanner" text="Mother Plants"/>
+							<core:Item key="DestroyedPlants" text="{i18n>DestroyedPlants}"/>
+							<core:Item key="Waste" text="{i18n>RecordWaste}"/>
+						</Select>
+					</FlexBox>
+				</f:content>
+				<f:actions>
+					<Title text="{i18n>Location}:"></Title>
+					<!--<ComboBox busy="{jsonModel>/licBusy}" id="license" width="18rem" change="onChanageLicenseType" items="{jsonModel>/licenseList}"-->
+					<!--	selectedKey="{jsonModel>/selectedLocation}">-->
+					<!--	<core:Item key="{jsonModel>U_MetrcLocation}" text="{jsonModel>BinCode} - {jsonModel>U_MetrcLicense}"/>-->
+					<!--</ComboBox>-->
+					<SearchField width="23rem" id="locDropDown" search="onSearchLicense" enableSuggestions="true" suggestionItems="{jsonModel>/licenseList}"
+						suggest="onSuggestLocation" value="{jsonModel>/selectedLocationDesc}">
+						<SuggestionItem text="{jsonModel>BinCode} - {jsonModel>U_MetrcLicense}"/>
+					</SearchField>
+					
+					<Button icon="sap-icon://refresh" press="refreshData"/>
+				</f:actions>
+				<f:navigationActions>
+					<tnt:InfoLabel class="metrcItem" text="{jsonModel>/METRCText}" colorScheme="{jsonModel>/METRCColorCode}" visible="{jsonModel>/MetrcOnOff}"/>
+					<tnt:InfoLabel class="metrcItem" text="{jsonModel>/METRCKey}" colorScheme="{jsonModel>/METRCColorKey}" visible="{jsonModel>/MetrcOnOff}"/>
+					<Button text="{jsonModel>/refreshText}" type="Transparent" enabled="false" class="lastUpdate" width="13rem"/>
+				</f:navigationActions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:content>
+			<FlexBox height="100%" class="fullHeight" direction="Column" visible="{= ${device>/system/phone} ? false : true}">
+				<table:Table id="inTakeTable" selectionMode="MultiToggle" visibleRowCountMode="Auto" columnMove="columnMove"
+					rows="{path:'jsonModel>/packagesData', sorter : { path : 'U_NDRDT', descending : true }}" cellClick="cellClick" rowSelectionChange="handleRowSelection">
+					<table:extension>
+						<OverflowToolbar>
+							<Title class="tableTitle" id="tableHeader" text="{i18n>Items}"/>
+							<ToolbarSpacer/>
+							<MultiInput width="25rem" placeholder="{i18n>Search}" tokenUpdate="tokenUpdateMultiInput" submit="onSubmitMultiInput" showValueHelp="false"
+								liveChange="onChangeMultiInput" id="searchFieldTable" enableMultiLineMode="true"/>
+							<Button text="Clear All Filters" press="clearAllFilters"/>
+							<Text class="sapMTBSeparator"/>
+							<Button type="Default" press="handleNewPackage" text="{i18n>NewPackage}"/>
+							<!--	<Button type="Default" press="handleCreateLabSample" text="{i18n>CreateLabSample}" visible="{jsonModel>/configData/V_CLS}"/>-->
+							<Button type="Default" press="handleInventoryTransfer" text="{i18n>InventaryTransfer}" visible="{jsonModel>/configData/V_CTR}"/>
+							<Button type="Default" press="handlechangeLocation" text="{i18n>ChangeLocation}"/>
+							<Button type="Default" press="handleTransferTemplate" text="Create Transfer"/>
+							<Button type="Default" press="handleBatchDetails" text="Batch Details"/>
+							<Button text="Move to Drying" press="onConfirmChangeGrowthPhase" type="Default" enabled="{jsonModel>/enableChangeGrowth}" />
+							<Button type="Default" press="handlechangeItemsMETRC" text="Change Items"/>
+							<!--	<Button text="Mark as Mother" press="handlemarkasMother" type="Default"/>-->
+							<Button type="Ghost" press="handleAdjust" text="{i18n>Adjust}" visible="{jsonModel>/configData/V_ADJ}"/>
+							<Button type="Accept" press="handleFinish" text="{i18n>Finish}" visible="{jsonModel>/configData/V_FIN}"/>
+						</OverflowToolbar>
+					</table:extension>
+					<table:columns>
+						<table:Column sortProperty="METRCUID" filterProperty="METRCUID">
+							<Label text="{i18n>METRCUID}" design="Bold" wrapping="true"/>
+							<table:template>
+								<Text text="{jsonModel>METRCUID}"/>
+							</table:template>
+						</table:Column>
+						<table:Column sortProperty="ItemName" filterProperty="ItemName">
+							<Label text="{i18n>Item}" design="Bold" wrapping="true"/>
+							<table:template>
+								<Text text="{jsonModel>ItemName}"/>
+							</table:template>
+						</table:Column>
+						<table:Column sortProperty="SourceUID" filterProperty="SourceUID">
+							<Label text="{i18n>SourceUID}" design="Bold" wrapping="true"/>
+							<table:template>
+								<Text text="{jsonModel>SourceUID}"/>
+							</table:template>
+						</table:Column>
+						<table:Column sortProperty="HarvestName" filterProperty="HarvestName">
+							<Label text="{i18n>HarvestName}" design="Bold" wrapping="true"/>
+							<table:template>
+								<Text text="{jsonModel>HarvestName}"/>
+							</table:template>
+						</table:Column>
+						<table:Column sortProperty="BinLocationName" filterProperty="BinLocationName">
+							<Label text="{i18n>Location}" design="Bold" wrapping="true"/>
+							<table:template>
+								<Text text="{jsonModel>BinLocationName}"/>
+							</table:template>
+						</table:Column>
+						<!--	<table:Column sortProperty="U_NLBST" filterProperty="U_NLBST" width="10%">
+							<Label text="{i18n>LabStatus}" design="Bold"/>
+							<table:template>
+								<Button text="{jsonModel>LABSTATUS}" busy="{jsonModel>reportBusy}" enabled="{jsonModel>ENLAB}" press="openLabReport" type="Transparent"/>
+							</table:template>
+						</table:Column>-->
+						<table:Column sortProperty="CreateDate" filterProperty="CreateDate">
+							<Label text="{i18n>CreateDate}" design="Bold"/>
+							<table:template>
+								<Text text="{path:'jsonModel>CreateDate',formatter:'.formatter.dateDisplay'}" wrapping="true"/>
+							</table:template>
+						</table:Column>
+						<table:Column sortProperty="Quantity" filterProperty="Quantity" defaultFilterOperator="EQ" >
+							<Label text="{i18n>Quantity}" design="Bold" wrapping="true"/>
+							<table:template>
+								<Text text="{jsonModel>Quantity}"/>
+							</table:template>
+						</table:Column>
+					</table:columns>
+				</table:Table>
+			</FlexBox>
+		</f:content>
+		<f:footer>
+			<OverflowToolbar>
+				<Bar>
+					<contentLeft>
+						<Button id="resPop" icon="sap-icon://information" press="handleOpenPopOver" ariaHasPopup="Dialog"/>
+					</contentLeft>
+					<contentRight>
+					<Text text="{jsonModel>/versionInfo}"/>
+					</contentRight>
+				</Bar>
+			</OverflowToolbar>
+		</f:footer>
+	</f:DynamicPage>
+</mvc:View>

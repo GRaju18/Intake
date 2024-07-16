@@ -1,0 +1,55 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+    <Dialog class="sapUiSizeCompact" draggable="true" busy="{jsonModel>/busyView}">
+        <customHeader>
+            <Bar>
+                <contentMiddle>
+                    <Label text="Batch Details"/>
+                </contentMiddle>
+            </Bar>
+        </customHeader>
+        <content>
+            <FlexBox direction="Column">
+                <InputListItem label="Sales Repo" width="5rem" >
+                    <Select id="scalesRepid" width="20rem" selectedKey="{jsonModel>/hgPhase}">
+                        <core:Item key="test1" text="test1"/>
+                        <core:Item key="test2" text="test2"/>
+                        <core:Item key="test3" text="test3"/>
+                    </Select>
+                </InputListItem>
+                <InputListItem label="Price" width="5rem" >
+                    <Input type="Number" width="20rem" value="{jsonModel>/batchDetailsdata/QTYY}"/>
+                </InputListItem>
+                <InputListItem label="Yellow Head" width="5rem">
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="Bottom" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="PM" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="C/D" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="Burned" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="Bugs" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="Seeded/Banana" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+                <InputListItem label="Glass" width="5rem" >
+                    <CheckBox selected="false"/>
+                </InputListItem>
+            </FlexBox>
+        </content>
+        <beginButton>
+            <Button type="Emphasized" text="Update" press="onconfirmBatchDetails" enabled="{jsonModel>/enableOk}"/>
+        </beginButton>
+        <endButton>
+            <Button type="Transparent" text="{i18n>Cancel}" press="onbatchDetailsClose"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

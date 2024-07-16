@@ -1,0 +1,53 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog class="sapUiSizeCompact" stretch="{device>/system/phone}" title="New Package" contentWidth="100%" draggable="true">
+		<content>
+			<VBox>
+				<FlexBox class="sapUiSmallMargin" width="95%" justifyContent="Center">
+					<FlexBox alignItems="Center">
+						<Text text="Location" class="sapUiSmallMarginBeginEnd"/>
+						<ComboBox id="temLocationId" selectedKey="{jsonModel>/temChangeLoc}" width="100%" items="{jsonModel>/harvestLocData}"
+							busy="{jsonModel>/ComboBoxBusy}">
+							<core:Item key="{jsonModel>Warehouse}-{jsonModel>AbsEntry}-{jsonModel>BinCode}" text="{jsonModel>BinCode}"/>
+						</ComboBox>
+					</FlexBox>
+					<FlexBox alignItems="Center">
+						<Button type="Emphasized" text="Apply" press="onCreatePackagesTemApply" class="sapUiSmallMarginBeginEnd"/>
+					</FlexBox>
+				</FlexBox>
+				<Table id="productsTable" inset="false" mode="None" items="{ path: 'jsonModel>/createPackageData', factory: '.productListItemGPhase'}"
+					width="100%" fixedLayout="false">
+					<columns>
+						<Column width="2rem">
+							<Label text="SNO." design="Bold"/>
+						</Column>
+						<Column width="13rem">
+							<Label text="METRC UID" design="Bold"/>
+						</Column>
+						<Column width="8rem">
+							<Label text="{i18n>AvailableQuantity}" design="Bold"/>
+						</Column>
+						<Column width="6rem">
+							<Label text="{i18n>EnterQuantity}" design="Bold"/>
+						</Column>
+						<Column width="10rem">
+							<Label text="{i18n>PackageTag}" design="Bold"/>
+						</Column>
+						<Column width="10rem">
+							<Label text="{i18n>Location}" design="Bold"/>
+						</Column>
+						<Column width="14rem">
+							<Label text="{i18n>Item}" design="Bold"/>
+						</Column>
+						<Column width="5%">
+							<Label text="" design="Bold"/>
+						</Column>
+					</columns>
+				</Table>
+			</VBox>
+		</content>
+		<beginButton><Button type="Emphasized" text="{i18n>CreatePackages}" press="confirmcreatePackages"/></beginButton>
+		<endButton>
+			<Button type="Transparent" text="{i18n>Cancel}" press="createPackageCancel"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

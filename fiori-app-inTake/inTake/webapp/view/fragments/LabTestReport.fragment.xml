@@ -1,0 +1,66 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form">
+	<Dialog class="sapUiSizeCompact" stretch="{device>/system/phone}" title="Lab Test Report" contentWidth="100%" draggable="true">
+		<content>
+			<VBox>
+				<f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+					adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="2"
+					singleContainerFullSize="false">
+					<f:content>
+						<core:Title text=""/>
+						<Label text="Package ID"/>
+						<Text text="{/reportHeader/PackageId}" class="reportValue"/>
+						<Label text="Lab Test Result ID"/>
+						<Text text="{/reportHeader/LabTestResultId}" class="reportValue"/>
+						<Label text="Lab License Number"/>
+						<Text text="{/reportHeader/LabFacilityLicenseNumber}" class="reportValue"/>
+						<Label text="Lab Name"/>
+						<Text text="{/reportHeader/LabFacilityName}" class="reportValue"/>
+						<core:Title text=""/>
+						<Label text="METRC Tag"/>
+						<Text text="{/reportHeader/SourcePackageLabel}" class="reportValue"/>
+						<Label text="Source METRC Tag"/>
+						<Text text="{/reportHeader/srcPkg}" class="reportValue"/>
+						<Label text="Product Name"/>
+						<Text text="{/reportHeader/ProductName}" class="reportValue"/>
+						<Label text="Product Category"/>
+						<Text text="{/reportHeader/ProductCategoryName}" class="reportValue"/>
+						<Label text="Test Date"/>
+						<Text text="{path:'/reportHeader/TestPerformedDate',formatter:'.formatter.dateDisplay'}" class="reportValue"/>
+					</f:content>
+				</f:SimpleForm>
+			</VBox>
+			<VBox class="sapUiSmallMargin">
+				<Table id="reportTable" inset="false" mode="None" items="{ path: 'jsonModel>/reportTableData'}" class="sapUiTinyMargin" width="auto"
+					fixedLayout="false">
+					<columns>
+						<Column>
+							<Label text="Test Type" design="Bold"/>
+						</Column>
+						<Column>
+							<Label text="Test Passed" design="Bold"/>
+						</Column>
+						<Column>
+							<Label text="Test Result Level" design="Bold"/>
+						</Column>
+						<Column>
+							<Label text="Test Comments" design="Bold"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{jsonModel>TestTypeName}"/>
+								<Text text="{= ${jsonModel>TestPassed} ? 'Yes' : 'No'}"/>
+								<Text text="{jsonModel>TestResultLevel}"/>
+								<Text text="{jsonModel>TestComment}"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+		<endButton>
+			<Button type="Transparent" text="Cancel" press="onLabReportClose"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>
