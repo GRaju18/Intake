@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
-    <Dialog class="sapUiSizeCompact" draggable="true" busy="{jsonModel>/busyView}">
+    <Dialog id="batchDetailsID" class="sapUiSizeCompact" draggable="true" busy="{jsonModel>/busyView}">
         <customHeader>
             <Bar>
                 <contentMiddle>
@@ -9,39 +9,39 @@
         </customHeader>
         <content>
             <FlexBox direction="Column">
-                <InputListItem label="Sales Repo" width="5rem" >
-                    <Select id="scalesRepid" width="20rem" selectedKey="{jsonModel>/hgPhase}">
-                        <core:Item key="test1" text="test1"/>
-                        <core:Item key="test2" text="test2"/>
-                        <core:Item key="test3" text="test3"/>
-                    </Select>
+                <InputListItem label="Sales person" width="15rem" >
+ 				<ComboBox width="10rem" id="sRepo" editable="true"  items="{path: 'jsonModel>/salesPersonDATA'}">
+					<items>
+						<core:Item key="{jsonModel>SalesEmployeeName}" text="{jsonModel>SalesEmployeeName}"/>
+					</items>
+				</ComboBox>
                 </InputListItem>
-                <InputListItem label="Price" width="5rem" >
-                    <Input type="Number" width="20rem" value="{jsonModel>/batchDetailsdata/QTYY}"/>
+                <InputListItem label="Price" width="15rem" >
+                    <Input type="Number" width="10rem" value="{jsonModel>/batchDetailsObj/IntrSerialPrice}"/>
                 </InputListItem>
-                <InputListItem label="Yellow Head" width="5rem">
-                    <CheckBox selected="false"/>
+                <InputListItem label="Yellow Head" width="11rem">
+                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Yellowhead} === 'Y' }" class="sapUiLargeMarginEnd" />
                 </InputListItem>
-                <InputListItem label="Bottom" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="Bottoms" width="11rem" >
+                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Bottoms} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
-                <InputListItem label="PM" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="PM" width="11rem" >
+                    <CheckBox  select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_PM} === 'Y' }" class="sapUiLargeMarginEnd" />
                 </InputListItem>
-                <InputListItem label="C/D" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="C/D" width="11rem" >
+                    <CheckBox  select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_CD} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
-                <InputListItem label="Burned" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="Burned" width="11rem" >
+                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Burned} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
-                <InputListItem label="Bugs" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="Bugs" width="11rem" >
+                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Bugs} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
-                <InputListItem label="Seeded/Banana" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="Seeded/Banana" width="11rem" >
+                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_SeedBana} === 'Y'}" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
-                <InputListItem label="Glass" width="5rem" >
-                    <CheckBox selected="false"/>
+                <InputListItem label="Glass" width="11rem" >
+                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Glass} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
             </FlexBox>
         </content>

@@ -104,6 +104,7 @@ sap.ui.define([
 
 		cellClick: function (evt) {
 			//	evt.getParameter("cellControl").getParent()._setSelected(true);
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var cellControl = evt.getParameter("cellControl");
 			var isBinded = cellControl.getBindingContext("jsonModel");
 			if (isBinded) {
@@ -122,6 +123,12 @@ sap.ui.define([
 					});
 				} else {
 					oTable.clearSelection();
+				}
+				
+				if (sIndices.length == 1) {
+					jsonModel.setProperty("/batchDetailButton", true );
+				} else {
+					jsonModel.setProperty("/batchDetailButton", false );
 				}
 			}
 

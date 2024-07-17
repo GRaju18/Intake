@@ -45,7 +45,7 @@
 					rows="{path:'jsonModel>/packagesData', sorter : { path : 'U_NDRDT', descending : true }}" cellClick="cellClick" rowSelectionChange="handleRowSelection">
 					<table:extension>
 						<OverflowToolbar>
-							<Title class="tableTitle" id="tableHeader" text="{i18n>Items}"/>
+							<Title class="tableTitle" id="tableHeader" text="Packages"/>
 							<ToolbarSpacer/>
 							<MultiInput width="25rem" placeholder="{i18n>Search}" tokenUpdate="tokenUpdateMultiInput" submit="onSubmitMultiInput" showValueHelp="false"
 								liveChange="onChangeMultiInput" id="searchFieldTable" enableMultiLineMode="true"/>
@@ -56,7 +56,7 @@
 							<Button type="Default" press="handleInventoryTransfer" text="{i18n>InventaryTransfer}" visible="{jsonModel>/configData/V_CTR}"/>
 							<Button type="Default" press="handlechangeLocation" text="{i18n>ChangeLocation}"/>
 							<Button type="Default" press="handleTransferTemplate" text="Create Transfer"/>
-							<Button type="Default" press="handleBatchDetails" text="Batch Details"/>
+							<Button type="Default" press="handleBatchDetails" text="Batch Details" enabled="{jsonModel>/batchDetailButton}" />
 							<Button text="Move to Drying" press="onConfirmChangeGrowthPhase" type="Default" enabled="{jsonModel>/enableChangeGrowth}" />
 							<Button type="Default" press="handlechangeItemsMETRC" text="Change Items"/>
 							<!--	<Button text="Mark as Mother" press="handlemarkasMother" type="Default"/>-->

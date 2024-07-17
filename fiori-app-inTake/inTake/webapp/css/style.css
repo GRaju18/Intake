@@ -6,6 +6,12 @@
     border-radius: 0;
 }
 
+
+.batchdetailsCheckbox{
+	position: absolute;
+    right: 30%;
+}
+
  .noTitle{
 	padding-right: 9%;
 }
