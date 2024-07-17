@@ -1927,37 +1927,6 @@ sap.ui.define([
 			this.batchDetailsDialog.close();
 		},
 
-		// onCheckBoxSelect: function (oEvent) {
-		// 	var jsonModel = this.getOwnerComponent().getModel("jsonModel");
-		// 	var bSelected = oEvent.getParameter("selected");
-		// 	var sValue = bSelected ? 'Y' : 'N';
-
-		// 	if (oEvent.getParameters().id == "__box2") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_Yellowhead", sValue);
-		// 	}
-		// 	if (oEvent.getParameters().id == "__box3") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_Bottoms", sValue);
-		// 	}
-		// 	if (oEvent.getParameters().id == "__box4") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_PM", sValue);
-		// 	}
-		// 	if (oEvent.getParameters().id == "__box5") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_CD", sValue);
-		// 	}
-		// 	if (oEvent.getParameters().id == "__box6") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_Burned", sValue);
-		// 	}
-		// 	if (oEvent.getParameters().id == "__box7") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_Bugs", sValue);
-		// 	}
-		// 	if (oEvent.getParameters().id == "__box8") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_SeedBana", sValue);
-		// 	}
-
-		// 	if (oEvent.getParameters().id == "__box9") {
-		// 		jsonModel.setProperty("/batchDetailsObj/U_Glass", sValue);
-		// 	}
-		// },
 		
 		onCheckBoxSelect1: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
