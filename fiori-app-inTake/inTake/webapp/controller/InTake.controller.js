@@ -1916,7 +1916,7 @@ sap.ui.define([
 					if (rObj.length > 0) {
 						sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue(rObj[0].SalesEmployeeName);
 					} else {
-						sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue("");
+						sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue(batchDetailsObj.IntrSerial.split("-")[0].trimEnd());
 
 					}
 				}
@@ -1927,36 +1927,92 @@ sap.ui.define([
 			this.batchDetailsDialog.close();
 		},
 
-		onCheckBoxSelect: function (oEvent) {
+		// onCheckBoxSelect: function (oEvent) {
+		// 	var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+		// 	var bSelected = oEvent.getParameter("selected");
+		// 	var sValue = bSelected ? 'Y' : 'N';
+
+		// 	if (oEvent.getParameters().id == "__box2") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_Yellowhead", sValue);
+		// 	}
+		// 	if (oEvent.getParameters().id == "__box3") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_Bottoms", sValue);
+		// 	}
+		// 	if (oEvent.getParameters().id == "__box4") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_PM", sValue);
+		// 	}
+		// 	if (oEvent.getParameters().id == "__box5") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_CD", sValue);
+		// 	}
+		// 	if (oEvent.getParameters().id == "__box6") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_Burned", sValue);
+		// 	}
+		// 	if (oEvent.getParameters().id == "__box7") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_Bugs", sValue);
+		// 	}
+		// 	if (oEvent.getParameters().id == "__box8") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_SeedBana", sValue);
+		// 	}
+
+		// 	if (oEvent.getParameters().id == "__box9") {
+		// 		jsonModel.setProperty("/batchDetailsObj/U_Glass", sValue);
+		// 	}
+		// },
+		
+		onCheckBoxSelect1: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
-
-			if (oEvent.getParameters().id == "__box2") {
-				jsonModel.setProperty("/batchDetailsObj/U_Yellowhead", sValue);
-			}
-			if (oEvent.getParameters().id == "__box3") {
-				jsonModel.setProperty("/batchDetailsObj/U_Bottoms", sValue);
-			}
-			if (oEvent.getParameters().id == "__box4") {
-				jsonModel.setProperty("/batchDetailsObj/U_PM", sValue);
-			}
-			if (oEvent.getParameters().id == "__box5") {
-				jsonModel.setProperty("/batchDetailsObj/U_CD", sValue);
-			}
-			if (oEvent.getParameters().id == "__box6") {
-				jsonModel.setProperty("/batchDetailsObj/U_Burned", sValue);
-			}
-			if (oEvent.getParameters().id == "__box7") {
-				jsonModel.setProperty("/batchDetailsObj/U_Bugs", sValue);
-			}
-			if (oEvent.getParameters().id == "__box8") {
-				jsonModel.setProperty("/batchDetailsObj/U_SeedBana", sValue);
-			}
-
-			if (oEvent.getParameters().id == "__box9") {
-				jsonModel.setProperty("/batchDetailsObj/U_Glass", sValue);
-			}
+			jsonModel.setProperty("/batchDetailsObj/U_Yellowhead", sValue);
+		},
+		
+		onCheckBoxSelect2: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_Bottoms", sValue);
+		},
+		
+		onCheckBoxSelect3: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_PM", sValue);
+		},
+		
+		onCheckBoxSelect4: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_CD", sValue);
+		},
+		
+		onCheckBoxSelect5: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_Burned", sValue);
+		},
+		
+		onCheckBoxSelect6: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_Bugs", sValue);
+		},
+		
+		onCheckBoxSelect7: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_SeedBana", sValue);
+		},
+		
+		onCheckBoxSelect8: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? 'Y' : 'N';
+			jsonModel.setProperty("/batchDetailsObj/U_Glass", sValue);
 		},
 
 		handleBatchDetails: function () {

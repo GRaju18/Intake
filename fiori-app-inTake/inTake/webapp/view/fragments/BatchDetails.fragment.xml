@@ -9,39 +9,39 @@
         </customHeader>
         <content>
             <FlexBox direction="Column">
-                <InputListItem label="Sales person" width="15rem" >
- 				<ComboBox width="10rem" id="sRepo" editable="true"  items="{path: 'jsonModel>/salesPersonDATA'}">
+                <InputListItem label="Sales Person" width="15rem" >
+ 				<ComboBox width="15rem" id="sRepo" editable="true"  items="{path: 'jsonModel>/salesPersonDATA'}">
 					<items>
 						<core:Item key="{jsonModel>SalesEmployeeName}" text="{jsonModel>SalesEmployeeName}"/>
 					</items>
 				</ComboBox>
                 </InputListItem>
                 <InputListItem label="Price" width="15rem" >
-                    <Input type="Number" width="10rem" value="{jsonModel>/batchDetailsObj/IntrSerialPrice}"/>
+                    <Input type="Number" width="15rem" value="{jsonModel>/batchDetailsObj/IntrSerialPrice}"/>
                 </InputListItem>
                 <InputListItem label="Yellow Head" width="11rem">
-                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Yellowhead} === 'Y' }" class="sapUiLargeMarginEnd" />
+                    <CheckBox select="onCheckBoxSelect1" selected = "{= ${jsonModel>/batchDetailsObj/U_Yellowhead} === 'Y' }" class="sapUiLargeMarginEnd" />
                 </InputListItem>
                 <InputListItem label="Bottoms" width="11rem" >
-                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Bottoms} === 'Y' }" class="sapUiLargeMarginEnd"/>
+                    <CheckBox select="onCheckBoxSelect2" selected = "{= ${jsonModel>/batchDetailsObj/U_Bottoms} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
                 <InputListItem label="PM" width="11rem" >
-                    <CheckBox  select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_PM} === 'Y' }" class="sapUiLargeMarginEnd" />
+                    <CheckBox  select="onCheckBoxSelect3" selected = "{= ${jsonModel>/batchDetailsObj/U_PM} === 'Y' }" class="sapUiLargeMarginEnd" />
                 </InputListItem>
                 <InputListItem label="C/D" width="11rem" >
-                    <CheckBox  select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_CD} === 'Y' }" class="sapUiLargeMarginEnd"/>
+                    <CheckBox  select="onCheckBoxSelect4" selected = "{= ${jsonModel>/batchDetailsObj/U_CD} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
                 <InputListItem label="Burned" width="11rem" >
-                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Burned} === 'Y' }" class="sapUiLargeMarginEnd"/>
+                    <CheckBox select="onCheckBoxSelect5" selected = "{= ${jsonModel>/batchDetailsObj/U_Burned} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
                 <InputListItem label="Bugs" width="11rem" >
-                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Bugs} === 'Y' }" class="sapUiLargeMarginEnd"/>
+                    <CheckBox select="onCheckBoxSelect6" selected = "{= ${jsonModel>/batchDetailsObj/U_Bugs} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
                 <InputListItem label="Seeded/Banana" width="11rem" >
-                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_SeedBana} === 'Y'}" class="sapUiLargeMarginEnd"/>
+                    <CheckBox select="onCheckBoxSelect7" selected = "{= ${jsonModel>/batchDetailsObj/U_SeedBana} === 'Y'}" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
                 <InputListItem label="Glass" width="11rem" >
-                    <CheckBox select="onCheckBoxSelect" selected = "{= ${jsonModel>/batchDetailsObj/U_Glass} === 'Y' }" class="sapUiLargeMarginEnd"/>
+                    <CheckBox select="onCheckBoxSelect8" selected = "{= ${jsonModel>/batchDetailsObj/U_Glass} === 'Y' }" class="sapUiLargeMarginEnd"/>
                 </InputListItem>
             </FlexBox>
         </content>
