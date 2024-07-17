@@ -73,7 +73,7 @@ sap.ui.define([
 					MotherPlanner: "webclient-ext-motherplanner2-app-content-sapb1motherplanner",
 					DestroyedPlants: "webclient-ext-destroy-plant-app-content-sapb1destroy-plant",
 					Waste: "webclient-ext-waste-record-app-content-sapb1waste-record",
-					inTake: "webclient-ext-manage-packages-v2-app-content-sapb1manage-packages",
+					inTake: "webclient-ext-inTake-v2-app-content-sapb1inTake",
 					METRCTag: "webclient-ext-metrc-tag-app-content-sapb1metrctag",
 					ReceiveProducts: "webclient-ext-receive-products-app-content-sapb1receive-products"
 				}
