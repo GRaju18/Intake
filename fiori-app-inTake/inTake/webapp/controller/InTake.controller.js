@@ -50,7 +50,7 @@ sap.ui.define([
 				jsonModel.setProperty("/tagArray", []);
 				jsonModel.setProperty("/isSingleSelect", false);
 				jsonModel.setProperty("/enableChangeGrowth", false);
-				jsonModel.setProperty("/batchDetailButton", false );
+				jsonModel.setProperty("/batchDetailButton", false);
 				this.getMetricsCredentials();
 				//this.loadMasterData();
 				this.loadLicenseData();
@@ -1900,13 +1900,48 @@ sap.ui.define([
 
 		/******  batch details starts********/
 
+		batchPriceChange: function (evt) {
+			var Value = evt.getParameters().newValue;
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var batchDetailsObj = jsonModel.getProperty("/batchDetailsObj");
+			var actualPrice = batchDetailsObj.IntrSerialPrice;
+			jsonModel.setProperty("/pricenewValue", Value);
+			if (Number(Value) == Number(actualPrice)) {
+				jsonModel.setProperty("/enableOkBatch", false);
+			} else {
+				jsonModel.setProperty("/enableOkBatch", true);
+			}
+			this._checkChanges();
+		},
+
+		onComboBoxBatchChange: function (oEvent) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var oComboBox = oEvent.getSource();
+			var sSelectedKey = oComboBox.getSelectedKey();
+			jsonModel.setProperty("/batchComboBoxnewName", sSelectedKey);
+			var batchDetailsObjName = "";
+			if (jsonModel.getProperty("/batchDetailsObj").IntrSerial != null) {
+				batchDetailsObjName = jsonModel.getProperty("/batchDetailsObj").IntrSerial.split("-")[0].trimEnd();
+			}
+
+			if (batchDetailsObjName == sSelectedKey) {
+				jsonModel.setProperty("/enableOkBatch", false);
+			} else {
+				jsonModel.setProperty("/enableOkBatch", true);
+			}
+			this._checkChanges();
+		},
+
 		salesPersonCall: function (evt) {
 			var that = this;
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var batchDetailsObj = jsonModel.getProperty("/batchDetailsObj");
 			// var filter = "?$filter=SalesEmployeeName eq'" + evt + "'";
+
+			jsonModel.setProperty("/onBusyBatchChange", true);
 			this.readServiecLayer("/b1s/v2/SalesPersons", function (data1) {
 				jsonModel.setProperty("/salesPersonDATA", data1.value);
+				jsonModel.setProperty("/onBusyBatchChange", false);
 				if (batchDetailsObj.IntrSerial != null) {
 					var rObj = $.grep(data1.value, function (nItem) {
 						if (nItem.SalesEmployeeName === batchDetailsObj.IntrSerial.split("-")[0].trimEnd()) {
@@ -1927,61 +1962,111 @@ sap.ui.define([
 			this.batchDetailsDialog.close();
 		},
 
-		
 		onCheckBoxSelect1: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_Yellowhead", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect2: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_Bottoms", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect3: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_PM", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect4: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_CD", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect5: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_Burned", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect6: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_Bugs", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect7: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_SeedBana", sValue);
+			this._checkChanges();
 		},
-		
+
 		onCheckBoxSelect8: function (oEvent) {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var bSelected = oEvent.getParameter("selected");
 			var sValue = bSelected ? 'Y' : 'N';
 			jsonModel.setProperty("/batchDetailsObj/U_Glass", sValue);
+			this._checkChanges();
+		},
+
+		_checkChanges: function () {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var oBatchDetails = jsonModel.getProperty("/batchDetailsObj");
+			var batchDetailsObjName = "";
+			if (oBatchDetails.IntrSerial != null) {
+				batchDetailsObjName = oBatchDetails.IntrSerial.split("-")[0].trimEnd();
+			}
+			var pricenewValue="",batchComboBoxnewName="",IntrSerialoldPrice="";
+			if(jsonModel.getProperty("/pricenewValue") != undefined){
+			pricenewValue = jsonModel.getProperty("/pricenewValue");
+			}
+			if(jsonModel.getProperty("/batchComboBoxnewName") != undefined){
+				batchComboBoxnewName = jsonModel.getProperty("/batchComboBoxnewName")
+			}
+			
+			if(oBatchDetails.IntrSerial != null){
+			IntrSerialoldPrice = oBatchDetails.IntrSerial.split("-")[1].replace(" $", "");
+			}
+			
+			if(pricenewValue == ""){
+				pricenewValue = IntrSerialoldPrice;
+			}
+			if(batchComboBoxnewName == ""){
+				batchComboBoxnewName = batchDetailsObjName;
+			}
+			
+
+			var bChanged = (
+				this._initialStates.U_Yellowhead !== oBatchDetails.U_Yellowhead ||
+				this._initialStates.U_Bottoms !== oBatchDetails.U_Bottoms ||
+				this._initialStates.U_PM !== oBatchDetails.U_PM ||
+				this._initialStates.U_CD !== oBatchDetails.U_CD ||
+				this._initialStates.U_Burned !== oBatchDetails.U_Burned ||
+				this._initialStates.U_Bugs !== oBatchDetails.U_Bugs ||
+				this._initialStates.U_SeedBana !== oBatchDetails.U_SeedBana ||
+				this._initialStates.U_Glass !== oBatchDetails.U_Glass ||
+				IntrSerialoldPrice !== pricenewValue ||
+				batchDetailsObjName !== batchComboBoxnewName
+			);
+
+			jsonModel.setProperty("/enableOkBatch", bChanged);
 		},
 
 		handleBatchDetails: function () {
@@ -1997,6 +2082,18 @@ sap.ui.define([
 				}
 
 				var updateObject = table.getContextByIndex(sItems).getObject();
+				this._initialStates = {
+					U_Yellowhead: updateObject.U_Yellowhead,
+					U_Bottoms: updateObject.U_Bottoms,
+					U_PM: updateObject.U_PM,
+					U_CD: updateObject.U_CD,
+					U_Burned: updateObject.U_Burned,
+					U_Bugs: updateObject.U_Bugs,
+					U_SeedBana: updateObject.U_SeedBana,
+					U_Glass: updateObject.U_Glass,
+					IntrSerial: updateObject.IntrSerial
+				};
+
 				var batchDetailsObj = {
 					BatchAbsEntry: updateObject.BatchAbsEntry,
 					METRCUID: updateObject.METRCUID,
@@ -2030,7 +2127,9 @@ sap.ui.define([
 					// jsonModel.setProperty("/salesPersonDATA", "");
 					// sap.m.MessageToast.show("No sales person found");
 				}
-
+				jsonModel.setProperty("/batchComboBoxnewName","");
+				jsonModel.setProperty("/pricenewValue","");
+				jsonModel.setProperty("/enableOkBatch", false);
 				jsonModel.setProperty("/batchDetailsObj", batchDetailsObj);
 				this.batchDetailsDialog.open();
 				this.salesPersonCall();
@@ -2075,7 +2174,7 @@ sap.ui.define([
 				that.updateServiecLayer("/b1s/v2/BatchNumberDetails(" + batchDetailsObj.BatchAbsEntry + ")", function (res) {
 					that.batchDetailsDialog.setBusy(false);
 					that.loadMasterData();
-					jsonModel.setProperty("/batchDetailButton", false );
+					jsonModel.setProperty("/batchDetailButton", false);
 					that.byId("inTakeTable").clearSelection();
 					that.batchDetailsDialog.close();
 				}.bind(that), patchPayload, "PATCH");
@@ -3665,10 +3764,10 @@ sap.ui.define([
 			if (evt.getParameter("rowContext")) {
 				var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 				var sItems = PlannerTable.getSelectedIndices();
-				if(sItems.length == 1){
-					jsonModel.setProperty("/batchDetailButton", true );
+				if (sItems.length == 1) {
+					jsonModel.setProperty("/batchDetailButton", true);
 				} else {
-					jsonModel.setProperty("/batchDetailButton", false );
+					jsonModel.setProperty("/batchDetailButton", false);
 				}
 				$.each(sItems, function (i, e) {
 					var updateObject = PlannerTable.getContextByIndex(e).getObject().ItemName;

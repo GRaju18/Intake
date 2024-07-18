@@ -10,14 +10,14 @@
         <content>
             <FlexBox direction="Column">
                 <InputListItem label="Sales Person" width="15rem" >
- 				<ComboBox width="15rem" id="sRepo" editable="true"  items="{path: 'jsonModel>/salesPersonDATA'}">
+ 				<ComboBox width="14rem" id="sRepo" editable="true"  items="{path: 'jsonModel>/salesPersonDATA'}" change="onComboBoxBatchChange" busy="{jsonModel>/onBusyBatchChange}">
 					<items>
 						<core:Item key="{jsonModel>SalesEmployeeName}" text="{jsonModel>SalesEmployeeName}"/>
 					</items>
 				</ComboBox>
                 </InputListItem>
                 <InputListItem label="Price" width="15rem" >
-                    <Input type="Number" width="15rem" value="{jsonModel>/batchDetailsObj/IntrSerialPrice}"/>
+                    <Input type="Number" width="14rem" value="{jsonModel>/batchDetailsObj/IntrSerialPrice}" liveChange="batchPriceChange" />
                 </InputListItem>
                 <InputListItem label="Yellow Head" width="11rem">
                     <CheckBox select="onCheckBoxSelect1" selected = "{= ${jsonModel>/batchDetailsObj/U_Yellowhead} === 'Y' }" class="sapUiLargeMarginEnd" />
@@ -46,7 +46,7 @@
             </FlexBox>
         </content>
         <beginButton>
-            <Button type="Emphasized" text="Update" press="onconfirmBatchDetails" enabled="{jsonModel>/enableOk}"/>
+            <Button type="Emphasized" text="Update" press="onconfirmBatchDetails" enabled="{jsonModel>/enableOkBatch}"/>
         </beginButton>
         <endButton>
             <Button type="Transparent" text="{i18n>Cancel}" press="onbatchDetailsClose"/>
