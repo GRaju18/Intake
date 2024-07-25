@@ -858,7 +858,8 @@ sap.ui.define([
 				this.getView().addDependent(this.transTemDialog);
 			}
 			that.transTemDialog.open();
-
+			that.loadTagsDataInPkg();
+			that.loadLocationsDataInPkg();
 			var oDateTimePicker = sap.ui.core.Fragment.byId("TransTem", "EstArrival");
 			var oCurrentDate = new Date();
 			oCurrentDate.setHours(17, 0, 0, 0);
@@ -1067,7 +1068,7 @@ sap.ui.define([
 					DocumentLines: []
 				};
 				var itemObj, updatePayload;
-				var metricPayload = [];
+				var metricPayloadForTT = [];
 				var metrcObj = {
 					Name: transTemplate.temName,
 					TransporterFacilityLicenseNumber: tranporterObj.Code,
@@ -1100,15 +1101,24 @@ sap.ui.define([
 						Packages: []
 					}]
 				};
+				var newPkgData = [],
+					newPkgTags = [],
+					cObj;
 				$.each(sPackages, function (lineNum, sObj) {
-					//	if (sObj.AQTY) {
+					if (sObj.NEWPKG !== "" && sObj.NEWPKG !== "Select a New Tag") {
+						cObj = {...sObj
+						};
+						newPkgData.push(that.createPkgForTransfer(cObj, that));
+						newPkgTags.push(sObj.NEWPKG);
+					}
+
 					var insideArray = [];
 					itemObj = {
 						"LineNum": lineNum,
 						"ItemCode": sObj.ItemCode,
 						"Quantity": sObj.shippedQuantity,
 						"WarehouseCode": sObj.WarehouseCode,
-						"U_InternalBatch": sObj.PACKAGE,
+						"U_InternalBatch": sObj.PACKAGE[0],
 						"U_Strain": "",
 						"BaseType": 17,
 						"BaseEntry": sObj.DocEntry,
@@ -1131,6 +1141,10 @@ sap.ui.define([
 								"Quantity": rObj2[0].Quantity,
 								"ItemCode": rObj2[0].ItemCode
 							};
+							if (sObj.NEWPKG !== "") {
+								insideDocumentLines.BatchNumber = sObj.NEWPKG;
+								insideDocumentLines.Quantity = Number(sObj.shippedQuantityfromReqQty);
+							}
 							itemObj.BatchNumbers.push(insideDocumentLines);
 						}
 
@@ -1138,36 +1152,61 @@ sap.ui.define([
 
 					payloadTransfer.DocumentLines.push(itemObj);
 
-					//}
+					var dpkgObj, dpTag;
 					if (sObj.AQTY && !sObj.isCannItem) {
 						$.each(sObj.PACKAGE, function (index, tag) {
-							metrcObj.Destinations[0].Packages.push({
-								PackageLabel: tag,
+							if (sObj.NEWPKG !== "") {
+								dpTag = sObj.NEWPKG;
+							} else {
+								dpTag = tag;
+							}
+							var dpkgObj = {
+								PackageLabel: dpTag,
 								WholesalePrice: null
-							});
+							};
+							metrcObj.Destinations[0].Packages.push(dpkgObj);
 						});
 
 					}
 				});
-				metricPayload.push(metrcObj);
-				if (payloadTransfer.DocumentLines.length > 0) {
-					var that = this;
-					var metrcData = jsonModel.getProperty("/metrcData");
-					if (metrcData && metrcData.U_NACST === "X") {
-						//	var metrcUrl = "/packages/v1/change/locations?licenseNumber=" + jsonModel.getProperty("/selectedLicense");
-						var metrcUrl = "/transfers/v2/templates/outgoing?licenseNumber=" + jsonModel.getProperty("/selectedLicense");
-						that.callMetricsService(metrcUrl, "POST", metricPayload, function () {
-							sap.m.MessageToast.show("METRC sync completed successfully");
-							that.transTemInternalPostings(payloadTransfer, that.transTemDialog);
-						}, function (error) {
-							//	sap.m.MessageToast.show(JSON.stringify(error));
-						});
-					} else {
-						that.transTemInternalPostings(payloadTransfer, that.transTemDialog);
-					}
-				} else {
-					sap.m.MessageToast.show("Please select mandatory fields");
+				var checkForDuplicates = that.checkForDuplicates(newPkgTags);
+				if (checkForDuplicates) {
+					sap.m.MessageToast.show("Duplicate tags found");
+					return;
 				}
+				metricPayloadForTT.push(metrcObj);
+				if (newPkgData.length > 0) {
+					Promise.allSettled(newPkgData).then(function (values) {
+						if (values.length === newPkgData.length) {
+							that.confirmCreateTrasferTemplate(payloadTransfer, metricPayloadForTT, that);
+						}
+
+					});
+				} else {
+					this.confirmCreateTrasferTemplate(payloadTransfer, metricPayloadForTT, that);
+				}
+
+			}
+		},
+		confirmCreateTrasferTemplate: function (payloadTransfer, metricPayloadForTT, that) {
+			if (payloadTransfer.DocumentLines.length > 0) {
+				var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+				var metrcData = jsonModel.getProperty("/metrcData");
+				if (metrcData && metrcData.U_NACST === "X") {
+					//	var metrcUrl = "/packages/v1/change/locations?licenseNumber=" + jsonModel.getProperty("/selectedLicense");
+					var metrcUrl = "/transfers/v2/templates/outgoing?licenseNumber=" + jsonModel.getProperty("/selectedLicense");
+					that.callMetricsService(metrcUrl, "POST", metricPayloadForTT, function () {
+						sap.m.MessageToast.show("METRC sync completed successfully");
+						that.transTemInternalPostings(payloadTransfer, that.transTemDialog);
+					}, function (error) {
+						that.transTemDialog.setBusy(false);
+						//	sap.m.MessageToast.show(JSON.stringify(error));
+					});
+				} else {
+					that.transTemInternalPostings(payloadTransfer, that.transTemDialog);
+				}
+			} else {
+				sap.m.MessageToast.show("Please select mandatory fields");
 			}
 		},
 
@@ -1235,6 +1274,7 @@ sap.ui.define([
 				//	id: "packageTagMulticombo",
 				//	change: [this.onSuggestPkgSelected, this],
 				selectionChange: [this.onSuggestPkgSelectionChange, this],
+				selectionFinish: [this.onSuggestSelectionFinish, this],
 				selectedKeys: "{jsonModel>PACKAGE}",
 				width: "100%",
 				showClearIcon: true,
@@ -1255,8 +1295,33 @@ sap.ui.define([
 			pkgInput.setFilterFunction(function (sTerm, oItem) {
 				return oItem.getText().match(new RegExp(sTerm, "i")) || oItem.getKey().match(new RegExp(sTerm, "i"));
 			});
-
 			pkgInput.setModel(tableModel);
+			var newPkgSelect = new sap.m.Select({
+				forceSelection: true,
+				width: "100%",
+				selectedKey: "{jsonModel>NEWPKG}",
+				valueState: "{jsonModel>STATUSTAG}",
+				visible: "{jsonModel>SHOWNEWPKG}",
+				valueStateText: "{jsonModel>TAGTXT}",
+				items: {
+					path: '/harvestTagsData',
+					template: new sap.ui.core.Item({
+						key: "{Label}",
+						text: "{Label}"
+					})
+				},
+				change: [this.onChangeNewPkgForTransfer, this],
+			});
+			var harvestTagsData = jsonModel.getProperty("/harvestTagsData");
+			var cloneHarvestTagData = JSON.parse(JSON.stringify(harvestTagsData));
+			var tableModel2 = new sap.ui.model.json.JSONModel();
+			newPkgSelect.setModel(tableModel2);
+			var dummyObj = {
+				Label: "Select a New Tag"
+			};
+			cloneHarvestTagData.unshift(dummyObj);
+			tableModel2.setProperty("/harvestTagsData", cloneHarvestTagData);
+			sObj.NEWPKG = "Select a New Tag";
 			return new sap.m.ColumnListItem({
 				cells: [
 					new sap.m.Text({
@@ -1274,14 +1339,38 @@ sap.ui.define([
 					new sap.m.Text({
 						text: "{jsonModel>UnitPrice}"
 					}),
-					pkgInput,
+					new sap.m.VBox({
+						items: [pkgInput,
+							newPkgSelect
+						]
+					}),
 					new sap.m.Text({
 						text: "{jsonModel>AQTY}"
 					}),
-
 					shippedInput
-
 				]
+			});
+		},
+		onChangeNewPkgForTransfer: function (evt) {
+			var newpkg = [];
+			var linesData = evt.getSource().getModel("jsonModel").getProperty("/TransferTemDocLines");
+			$.each(linesData, function (i, e) {
+				if (e.NEWPKG && e.NEWPKG !== "Select a New Tag") {
+					newpkg.push(e.NEWPKG);
+				}
+			});
+
+			var checkState, newTagStatus;
+			if (this.checkForDuplicates(newpkg)) {
+				checkState = "Error";
+				newTagStatus = "Duplicate tags found";
+			} else {
+				checkState = "None";
+				newTagStatus = "";
+			}
+			$.each(linesData, function (i, e) {
+				e.STATUSTAG = checkState;
+				e.TAGTXT = newTagStatus;
 			});
 		},
 
@@ -1348,6 +1437,7 @@ sap.ui.define([
 					$.each(orderData.value[0].DocumentLines, function (i, Obj) {
 						if (Obj.LineStatus == "bost_Open") {
 							Obj.shippedQuantityfromReqQty = Obj.RemainingOpenQuantity;
+							Obj.SHOWNEWPKG = false;
 							orderDataArray.push(Obj);
 						}
 					});
@@ -1362,11 +1452,39 @@ sap.ui.define([
 			});
 		},
 
+		onSuggestSelectionFinish: function (evt) {
+			var lineObj = evt.getSource().getBindingContext("jsonModel").getObject();
+			var sItems = evt.getSource().getSelectedItems();
+			var qty = 0,
+				showNewPkg;
+			$.each(sItems, function (i, e) {
+				qty = qty + Number(e.getAdditionalText());
+			});
+			qty = Number(qty.toFixed(4));
+			lineObj.STATUS = "None";
+			lineObj.STATUSTXT = "";
+			if (qty > lineObj.RemainingOpenQuantity) {
+				showNewPkg = true;
+			} else {
+				showNewPkg = false;
+			}
+
+			lineObj.SHOWNEWPKG = showNewPkg;
+			var sModel = evt.getSource().getModel("jsonModel");
+			var sPath = evt.getSource().getBindingContext("jsonModel").getPath();
+			sModel.setProperty(sPath, lineObj);
+
+		},
+
 		onSuggestPkgSelectionChange: function (evt) {
 			var isSelected = evt.getParameter("selected");
 			var sKeys = evt.getSource().getSelectedKeys();
 			var sItems = evt.getSource().getSelectedItems();
 			var lineObj = evt.getSource().getBindingContext("jsonModel").getObject();
+			var sPkgObj = evt.getParameter("changedItem").getBindingContext().getObject();
+			var sourcePkgData = {...sPkgObj
+			};
+			lineObj.sourcePkgData = sourcePkgData;
 			var qty = 0,
 				isError = false;
 			$.each(sItems, function (i, e) {
@@ -1378,13 +1496,16 @@ sap.ui.define([
 			}
 			if (isError) {
 				lineObj.AQTY = qty;
-				lineObj.STATUS = "Error";
+				lineObj.STATUS = "Information";
 				lineObj.STATUSTXT = "Selected package qty is more than required qty.";
 			} else {
 				lineObj.AQTY = qty;
 				lineObj.STATUS = "None";
 				lineObj.STATUSTXT = "";
 			}
+			var sModel = evt.getSource().getModel("jsonModel");
+			var sPath = evt.getSource().getBindingContext("jsonModel").getPath();
+			sModel.setProperty(sPath, lineObj);
 
 		},
 
@@ -2033,25 +2154,26 @@ sap.ui.define([
 			if (oBatchDetails.IntrSerial != null) {
 				batchDetailsObjName = oBatchDetails.IntrSerial.split("-")[0].trimEnd();
 			}
-			var pricenewValue="",batchComboBoxnewName="",IntrSerialoldPrice="";
-			if(jsonModel.getProperty("/pricenewValue") != undefined){
-			pricenewValue = jsonModel.getProperty("/pricenewValue");
+			var pricenewValue = "",
+				batchComboBoxnewName = "",
+				IntrSerialoldPrice = "";
+			if (jsonModel.getProperty("/pricenewValue") != undefined) {
+				pricenewValue = jsonModel.getProperty("/pricenewValue");
 			}
-			if(jsonModel.getProperty("/batchComboBoxnewName") != undefined){
+			if (jsonModel.getProperty("/batchComboBoxnewName") != undefined) {
 				batchComboBoxnewName = jsonModel.getProperty("/batchComboBoxnewName")
 			}
-			
-			if(oBatchDetails.IntrSerial != null){
-			IntrSerialoldPrice = oBatchDetails.IntrSerial.split("-")[1].replace(" $", "");
+
+			if (oBatchDetails.IntrSerial != null) {
+				IntrSerialoldPrice = oBatchDetails.IntrSerial.split("-")[1].replace(" $", "");
 			}
-			
-			if(pricenewValue == ""){
+
+			if (pricenewValue == "") {
 				pricenewValue = IntrSerialoldPrice;
 			}
-			if(batchComboBoxnewName == ""){
+			if (batchComboBoxnewName == "") {
 				batchComboBoxnewName = batchDetailsObjName;
 			}
-			
 
 			var bChanged = (
 				this._initialStates.U_Yellowhead !== oBatchDetails.U_Yellowhead ||
@@ -2127,8 +2249,8 @@ sap.ui.define([
 					// jsonModel.setProperty("/salesPersonDATA", "");
 					// sap.m.MessageToast.show("No sales person found");
 				}
-				jsonModel.setProperty("/batchComboBoxnewName","");
-				jsonModel.setProperty("/pricenewValue","");
+				jsonModel.setProperty("/batchComboBoxnewName", "");
+				jsonModel.setProperty("/pricenewValue", "");
 				jsonModel.setProperty("/enableOkBatch", false);
 				jsonModel.setProperty("/batchDetailsObj", batchDetailsObj);
 				this.batchDetailsDialog.open();
