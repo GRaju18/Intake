@@ -52,36 +52,83 @@ sap.ui.define([
 				jsonModel.setProperty("/enableChangeGrowth", false);
 				jsonModel.setProperty("/batchDetailButton", false);
 				this.getMetricsCredentials();
-				//this.loadMasterData();
-				this.loadLicenseData();
 				this.getUsersService();
+				//this.loadLicenseData();
 			}
 		},
 
+		// loadLicenseData: function () {
+		// 	var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+		// 	jsonModel.setProperty("/licBusy", true);
+		// 	var that = this;
+		// 	var authModel = sap.ui.getCore().getModel("authModel");
+		// 	var sFilters = "?$filter=Inactive eq 'tNO' and not(startswith(Sublevel1,'SYSTEM'))";
+		// 	var sSelect = "&$select=BinCode,U_MetrcLicense,U_MetrcLocation,U_Branch";
+		// 	var order = "&$orderby=U_MetrcLicense asc,BinCode asc";
+		// 	this.readServiecLayer("/b1s/v2/BinLocations" + sFilters + sSelect + order, function (data) {
+		// 		jsonModel.setProperty("/licBusy", false);
+		// 		jsonModel.setProperty("/licenseList", data.value);
+		// 		authModel.setProperty("/licenseList", data.value);
+		// 		jsonModel.setProperty("/sLinObj", data.value[0]);
+		// 		authModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
+		// 		jsonModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
+		// 		jsonModel.setProperty("/selectedLocation", data.value[0].U_MetrcLocation);
+		// 		jsonModel.setProperty("/selectedBincode", data.value[0].BinCode);
+		// 		jsonModel.setProperty("/selectedBranchNUM", data.value[0].U_Branch);
+		// 		jsonModel.setProperty("/selectedLocationDesc", data.value[0].BinCode + " - " + data.value[0].U_MetrcLicense);
+		// 		that.loadMasterData(data.value[0].U_MetrcLocation);
+		// 		that.loadLocationData();
+		// 	});
+		// },
+
 		loadLicenseData: function () {
-			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
-			jsonModel.setProperty("/licBusy", true);
 			var that = this;
+			var compressedLisence = [];
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var authModel = sap.ui.getCore().getModel("authModel");
+			var userAccessLicense = jsonModel.getProperty("/userAccessLicense");
+			jsonModel.setProperty("/busyView", true);
 			var sFilters = "?$filter=Inactive eq 'tNO' and not(startswith(Sublevel1,'SYSTEM'))";
 			var sSelect = "&$select=BinCode,U_MetrcLicense,U_MetrcLocation,U_Branch";
 			var order = "&$orderby=U_MetrcLicense asc,BinCode asc";
 			this.readServiecLayer("/b1s/v2/BinLocations" + sFilters + sSelect + order, function (data) {
-				jsonModel.setProperty("/licBusy", false);
-				jsonModel.setProperty("/licenseList", data.value);
-				authModel.setProperty("/licenseList", data.value);
-				jsonModel.setProperty("/sLinObj", data.value[0]);
-				authModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
-				jsonModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
-				jsonModel.setProperty("/selectedLocation", data.value[0].U_MetrcLocation);
-				jsonModel.setProperty("/selectedBincode", data.value[0].BinCode);
-				jsonModel.setProperty("/selectedBranchNUM", data.value[0].U_Branch);
-				jsonModel.setProperty("/selectedLocationDesc", data.value[0].BinCode + " - " + data.value[0].U_MetrcLicense);
-				that.loadMasterData(data.value[0].U_MetrcLocation);
-				that.loadLocationData();
+				if (userAccessLicense && userAccessLicense != undefined) {
+					$.each(userAccessLicense, function (i, m) {
+						$.each(data.value, function (j, n) {
+							if (m.key == n.U_MetrcLicense) {
+								compressedLisence.push(n);
+							}
+						});
+					});
+					jsonModel.setProperty("/busyView", false);
+					jsonModel.setProperty("/licenseList", compressedLisence);
+					authModel.setProperty("/licenseList", compressedLisence);
+					jsonModel.setProperty("/sLinObj", compressedLisence[0]);
+					authModel.setProperty("/selectedLicense", compressedLisence[0].U_MetrcLicense);
+					jsonModel.setProperty("/selectedLicense", compressedLisence[0].U_MetrcLicense);
+					jsonModel.setProperty("/selectedLocation", compressedLisence[0].U_MetrcLocation);
+					jsonModel.setProperty("/selectedBincode", compressedLisence[0].BinCode);
+					jsonModel.setProperty("/selectedBranchNUM", compressedLisence[0].U_Branch);
+					jsonModel.setProperty("/selectedLocationDesc", compressedLisence[0].BinCode + " - " + compressedLisence[0].U_MetrcLicense);
+					jsonModel.refresh(true);
+					that.loadMasterData(compressedLisence[0].U_MetrcLocation);
+					that.loadLocationData();
+				} else {
+					jsonModel.setProperty("/busyView", false);
+					jsonModel.setProperty("/licenseList", data.value);
+					authModel.setProperty("/licenseList", data.value);
+					jsonModel.setProperty("/sLinObj", data.value[0]);
+					authModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
+					jsonModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
+					jsonModel.setProperty("/selectedLocation", data.value[0].U_MetrcLocation);
+					jsonModel.setProperty("/selectedBincode", data.value[0].BinCode);
+					jsonModel.setProperty("/selectedBranchNUM", data.value[0].U_Branch);
+					jsonModel.setProperty("/selectedLocationDesc", data.value[0].BinCode + " - " + data.value[0].U_MetrcLicense);
+					that.loadMasterData(data.value[0].U_MetrcLocation);
+					that.loadLocationData();
+				}
 			});
 		},
-
 		onSearchLicense: function (evt) {
 			var oItem = evt.getParameter("suggestionItem");
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");

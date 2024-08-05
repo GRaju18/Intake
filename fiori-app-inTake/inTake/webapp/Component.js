@@ -45,7 +45,7 @@ sap.ui.define([
 			this.setModel(appModel, "appModel");
 
 			var jsonModel = new JSONModel({
-				versionInfo: "v1.124.4",
+				versionInfo: "v1.124.5",
 				strainList: [],
 				createMode: false,
 				//	serLayerbaseUrl: "https://demo.seedandbeyond.com:50000",
@@ -55,14 +55,14 @@ sap.ui.define([
 				// 	"UserName": "aag11153",
 				// 	"Password": "#!GLaSs@HoUsE!#3579!#"
 				// },
-				
+
 				serLayerbaseUrl: "https://ghdev.seedandbeyond.com:50000",
 				userAuthPayload: {
-					"CompanyDB": "QAS",
+					"CompanyDB": "DEV",
 					"UserName": "aag11163",
 					"Password": "#!GLaSs@HoUsE!#9174!#"
 				},
-				
+
 				//set the app navigation URL model
 				target: {
 					Strain: "webclient-ext-strainlist-app-content-sapb1strainlist",

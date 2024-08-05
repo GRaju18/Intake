@@ -994,32 +994,6 @@ sap.ui.define([
 		// 	return [mandFlag, mandText];
 		// },
 
-		// getMetricsCredentials: function () {
-		// 	var that = this;
-		// 	var jsonModel = this.getOwnerComponent().getModel("jsonModel");
-		// 	var filters = "?$filter=U_NITTP eq 'METRC'";
-		// 	jsonModel.setProperty("/metrcBusy", true);
-		// 	jsonModel.setProperty("/enableSyncNow", false);
-		// 	this.readServiecLayer("/b1s/v2/NINGT" + filters, function (data) {
-		// 		jsonModel.setProperty("/metrcBusy", false);
-		// 		if (data.value.length > 0) {
-		// 			jsonModel.setProperty("/metrcData", data.value[0]);
-		// 			if (data.value[0].U_NACST === "X") {
-		// 				jsonModel.setProperty("/METRCText", "Metrc Sync is ON");
-		// 				jsonModel.setProperty("/METRCColorCode", 7);
-		// 				that.getCurrentFacilties();
-		// 			} else {
-		// 				jsonModel.setProperty("/METRCText", "Metrc Sync is OFF");
-		// 				jsonModel.setProperty("/METRCColorCode", 3);
-		// 			}
-		// 		} else {
-		// 			jsonModel.setProperty("/METRCText", "Metrc Sync is OFF");
-		// 			jsonModel.setProperty("/METRCColorCode", 3);
-		// 			jsonModel.setProperty("/metrcData", {});
-		// 		}
-
-		// 	});
-		// },
 		getMetricsCredentials: function () {
 			var that = this;
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
@@ -1039,6 +1013,7 @@ sap.ui.define([
 						jsonModel.setProperty("/METRCColorCode", 3);
 						jsonModel.setProperty("/METRCKey", "METRC Key Invalid");
 						jsonModel.setProperty("/METRCColorKey", 3);
+						that.loadLicenseData();
 					}
 				} else {
 					jsonModel.setProperty("/metrcData", {});
@@ -1046,6 +1021,7 @@ sap.ui.define([
 					jsonModel.setProperty("/METRCColorCode", 3);
 					jsonModel.setProperty("/METRCKey", "METRC Key Invalid");
 					jsonModel.setProperty("/METRCColorKey", 3);
+					that.loadLicenseData();
 				}
 			});
 		},
@@ -1166,12 +1142,45 @@ sap.ui.define([
 			});
 		},
 
+		// getCurrentFacilties: function () {
+		// 	var that = this;
+		// 	var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+		// 	this.readServiecLayer("/b1s/v2/UsersService_GetCurrentUser", function (data) {
+		// 		var metrcData = jsonModel.getProperty("/metrcData");
+		// 		jsonModel.setProperty("/apiKey", data.U_APIKey);
+		// 		if (metrcData !== undefined && !jQuery.isEmptyObject(metrcData)) {
+		// 			$.ajax({
+		// 				type: "GET",
+		// 				async: false,
+		// 				url: metrcData.U_NIURL + "/facilities/v2",
+		// 				contentType: "application/json",
+		// 				headers: {
+		// 					"Authorization": "Basic " + btoa(metrcData.U_NVNDK + ":" + data.U_APIKey)
+		// 				},
+		// 				success: function (facilities) {
+		// 					jsonModel.setProperty("/METRCKey", "METRC Key Valid");
+		// 					jsonModel.setProperty("/METRCColorKey", 7);
+		// 				},
+		// 				error: function () {
+		// 					jsonModel.setProperty("/METRCKey", "METRC Key Invalid");
+		// 					jsonModel.setProperty("/METRCColorKey", 3);
+		// 				}
+		// 			});
+		// 		}
+		// 	});
+		// },
+
 		getCurrentFacilties: function () {
 			var that = this;
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			this.readServiecLayer("/b1s/v2/UsersService_GetCurrentUser", function (data) {
 				var metrcData = jsonModel.getProperty("/metrcData");
 				jsonModel.setProperty("/apiKey", data.U_APIKey);
+				var userAccessLicense = JSON.parse(data.U_License);
+				if (userAccessLicense != null) {
+					jsonModel.setProperty("/userAccessLicense", userAccessLicense);
+				}
+				that.loadLicenseData();
 				if (metrcData !== undefined && !jQuery.isEmptyObject(metrcData)) {
 					$.ajax({
 						type: "GET",
@@ -1192,6 +1201,7 @@ sap.ui.define([
 					});
 				}
 			});
+
 		},
 		// capture metric log
 		createMetricLog: function (sUrl, method, reqPayload, resPayload, statusCode) {
