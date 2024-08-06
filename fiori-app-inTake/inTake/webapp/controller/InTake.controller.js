@@ -2379,7 +2379,7 @@ sap.ui.define([
 			jsonModel.setProperty("/orderDataBusy", true);
 			var sCustomer = evt.getSource().getSelectedKey();
 			var sSelect = "?$select=CardCode,DocumentStatus,DocNum,U_SNBICO";
-			var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and PickStatus eq 'tYES' and CardCode eq '" + sCustomer + "'";
+			var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and U_ReadyPick eq 'Y' and CardCode eq '" + sCustomer + "'";
 			// var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and CardCode eq '" + sCustomer + "' and LineStatus eq 'bost_Open'";
 			this.readServiecLayer("/b1s/v2/Orders" + sSelect + sFilter, function (orderData) {
 				jsonModel.setProperty("/SalesOrderData", orderData.value);
