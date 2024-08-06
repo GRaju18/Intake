@@ -45,7 +45,7 @@ sap.ui.define([
 			this.setModel(appModel, "appModel");
 
 			var jsonModel = new JSONModel({
-				versionInfo: "v1.124.5",
+				versionInfo: "v1.124.6",
 				strainList: [],
 				createMode: false,
 				//	serLayerbaseUrl: "https://demo.seedandbeyond.com:50000",
@@ -58,7 +58,7 @@ sap.ui.define([
 
 				serLayerbaseUrl: "https://ghdev.seedandbeyond.com:50000",
 				userAuthPayload: {
-					"CompanyDB": "DEV",
+					"CompanyDB": "QAS",
 					"UserName": "aag11163",
 					"Password": "#!GLaSs@HoUsE!#9174!#"
 				},

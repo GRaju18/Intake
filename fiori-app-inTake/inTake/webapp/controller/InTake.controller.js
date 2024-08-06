@@ -36,9 +36,9 @@ sap.ui.define([
 			}, inTakeTable);
 			this.combinedFilter = [];
 			var that = this;
-			setInterval(function () {
-				that.loadMasterData();
-			}, 1800000);
+			/*	setInterval(function () {
+					that.loadMasterData();
+				}, 1800000);*/
 			this.getOwnerComponent().getRouter(this).attachRoutePatternMatched(this._objectMatched, this);
 		},
 
@@ -273,9 +273,23 @@ sap.ui.define([
 			// }
 			this.getView().setBusy(true);
 			var filters = "?$filter=Status ne '1' and U_Phase eq 'Package' and BinLocationCode eq '" + selectedBincode +
-				"'&$orderby=CreateDate desc,METRCUID desc";
+				"'";
+			var itemGrpCodeIntake = jsonModel.getProperty("/itemGrpCodeIntake");
+			if (itemGrpCodeIntake) {
+				filters = filters + " and (";
+				$.each(itemGrpCodeIntake, function (i, e) {
+					if (i < itemGrpCodeIntake.length - 1) {
+						filters = filters + "ItemGroupCode eq " + e.key + " or ";
+					} else {
+						filters = filters + "ItemGroupCode eq " + e.key;
+					}
+
+				});
+				filters = filters + ")";
+			}
+			var orderBy = "&$orderby=CreateDate desc,METRCUID desc";
 			// var filters = "?$filter=U_MetrcLocation eq '" + selectedLocation + "'&$orderby=CreateDate desc,METRCUID desc";
-			this.readServiecLayer("/b1s/v2/sml.svc/CV_GH_BATCHQUERY_VW" + filters, function (data) {
+			this.readServiecLayer("/b1s/v2/sml.svc/CV_GH_BATCHQUERY_VW" + filters + orderBy, function (data) {
 
 				$.each(data.value, function (i, e) {
 					e.reportBusy = true;
@@ -1460,7 +1474,7 @@ sap.ui.define([
 			jsonModel.setProperty("/orderDataBusy", true);
 			var sCustomer = evt.getSource().getSelectedKey();
 			var sSelect = "?$select=CardCode,DocumentStatus,DocNum,U_SNBICO";
-			var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and CardCode eq '" + sCustomer + "'";
+			var sFilter = "&$filter=DocumentStatus eq 'bost_Open' PickStatus eq 'tYES' and CardCode eq '" + sCustomer + "'";
 			// var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and CardCode eq '" + sCustomer + "' and LineStatus eq 'bost_Open'";
 			this.readServiecLayer("/b1s/v2/Orders" + sSelect + sFilter, function (orderData) {
 				jsonModel.setProperty("/SalesOrderData", orderData.value);
@@ -2312,9 +2326,15 @@ sap.ui.define([
 			var jsonModel = this.getView().getModel("jsonModel");
 			var batchDetailsObj = jsonModel.getProperty("/batchDetailsObj");
 			var salesPerson = sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").getValue();
+			var priceTier = sap.ui.core.Fragment.byId("batchDetailsDialog", "priceTier").getValue();
 			var isValtidate = true;
 			if (salesPerson == "" || salesPerson == undefined) {
 				sap.m.MessageToast.show("Select sales Person");
+				isValtidate = false;
+				return;
+			}
+			if (priceTier == "" || priceTier == undefined) {
+				sap.m.MessageToast.show("Select Price Tier");
 				isValtidate = false;
 				return;
 			}
@@ -2338,6 +2358,7 @@ sap.ui.define([
 					"U_Bugs": batchDetailsObj.U_Bugs,
 					"U_SeedBana": batchDetailsObj.U_SeedBana,
 					"U_Glass": batchDetailsObj.U_Glass,
+					"U_PriceTier": priceTier
 				};
 
 				that.updateServiecLayer("/b1s/v2/BatchNumberDetails(" + batchDetailsObj.BatchAbsEntry + ")", function (res) {
@@ -2347,6 +2368,74 @@ sap.ui.define([
 					that.byId("inTakeTable").clearSelection();
 					that.batchDetailsDialog.close();
 				}.bind(that), patchPayload, "PATCH");
+			}
+
+		},
+		onCustomerSelectTempNEW: function (evt) {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			jsonModel.setProperty("/SalesOrderData", []);
+			jsonModel.setProperty("/valueStatecustomer", "None");
+			jsonModel.setProperty("/valueStateTextCustomer", "");
+			jsonModel.setProperty("/orderDataBusy", true);
+			var sCustomer = evt.getSource().getSelectedKey();
+			var sSelect = "?$select=CardCode,DocumentStatus,DocNum,U_SNBICO";
+			var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and PickStatus eq 'tYES' and CardCode eq '" + sCustomer + "'";
+			// var sFilter = "&$filter=DocumentStatus eq 'bost_Open' and CardCode eq '" + sCustomer + "' and LineStatus eq 'bost_Open'";
+			this.readServiecLayer("/b1s/v2/Orders" + sSelect + sFilter, function (orderData) {
+				jsonModel.setProperty("/SalesOrderData", orderData.value);
+				jsonModel.setProperty("/orderDataBusy", false);
+
+			});
+			jsonModel.setProperty("/driverDataphoneNUM", "");
+			jsonModel.setProperty("/valueStatecustomer", "None");
+			jsonModel.setProperty("/valueStateTextCustomer", "");
+			jsonModel.setProperty("/orderDataBusy", true);
+			jsonModel.setProperty("/TransporterData", "");
+			jsonModel.setProperty("/DriverData", "");
+			jsonModel.setProperty("/VehicleData", "");
+			var sCustomer = evt.getSource().getSelectedKey();
+			var selectedLicense = jsonModel.getProperty("/selectedLicense");
+			if (sCustomer != "") {
+				var tFilter = "?$filter=U_CardCode eq '" + sCustomer + "'";
+				this.readServiecLayer("/b1s/v2/U_NTRANS" + tFilter, function (transData) {
+					jsonModel.setProperty("/TransporterData", transData.value);
+					jsonModel.setProperty("/TransporterDataBusy", false);
+					if (transData.value.length > 0) {
+						// jsonModel.setProperty("/recipientLicenseCode", transData.value[0].Code);
+						// jsonModel.setProperty("/transTemplate/transporter", );
+						jsonModel.setProperty("/valueStatetranspoter", "None");
+						jsonModel.setProperty("/valueStateTexttranspoter", "");
+						jsonModel.setProperty("/transTemplate/transporter", transData.value[0].Code);
+						var sFilters = "?$filter=U_NTRAN eq '" + transData.value[0].Code + "' and U_CardCode eq '" + sCustomer + "' ";
+						this.readServiecLayer("/b1s/v2/U_DRIVERDETAILS" + sFilters, function (driverDetails) {
+							jsonModel.setProperty("/DriverData", driverDetails.value);
+							jsonModel.setProperty("/valueStatedriver", "None");
+							jsonModel.setProperty("/valueStateTextdriver", "");
+							jsonModel.setProperty("/driverDataBusy", false);
+							jsonModel.setProperty("/transTemplate/driverDetail", driverDetails.value[0].Code);
+							this.ondriverdetailsChange();
+						});
+						jsonModel.setProperty("/vehicleDataBusy", true);
+						this.readServiecLayer("/b1s/v2/U_VEHICLEDETAILS" + sFilters, function (vehicleDetails) {
+							jsonModel.setProperty("/VehicleData", vehicleDetails.value);
+							jsonModel.setProperty("/valueStatevehicle", "None");
+							jsonModel.setProperty("/valueStateTextvehicle", "");
+							jsonModel.setProperty("/vehicleDataBusy", false);
+							jsonModel.setProperty("/transTemplate/vehicleDetail", vehicleDetails.value[0].Code);
+
+						});
+					}
+				});
+
+			} else {
+
+				this.readServiecLayer("/b1s/v2/U_NTRANS", function (transData) {
+					jsonModel.setProperty("/TransporterData", transData.value);
+					jsonModel.setProperty("/TransporterDataBusy", false);
+					jsonModel.setProperty("/shiptoDropoDownVisible", false);
+					jsonModel.setProperty("/shiptoINPUTVisible", true);
+				});
+
 			}
 
 		},

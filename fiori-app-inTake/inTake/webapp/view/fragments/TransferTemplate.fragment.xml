@@ -9,7 +9,7 @@
 						<core:Title text=""/>
 						<Label text="{i18n>Customer}" required="false"/>
 						<ComboBox items="{jsonModel>/BPData}" selectedKey="{jsonModel>/transTemplate/customer}" width="100%" id="customer"
-							busy="{jsonModel>/BPDataBusy}" change="onCustomerSelect" valueState="{jsonModel>/valueStatecustomer}"
+							busy="{jsonModel>/BPDataBusy}" change="onCustomerSelectTempNEW" valueState="{jsonModel>/valueStatecustomer}"
 							valueStateText="{jsonModel>/valueStateTextCustomer}">
 							<core:ListItem key="{jsonModel>CardCode}" text="{jsonModel>CardName} - {jsonModel>CardForeignName}"/>
 						</ComboBox>

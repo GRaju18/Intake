@@ -174,7 +174,7 @@ sap.ui.define([
 		},
 		getAppConfigData: function () {
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
-			var filters = "?$filter=U_NAPP eq 'AllApps' or U_NAPP eq 'Manage Packages'";
+			var filters = "?$filter=U_NAPP eq 'AllApps' or U_NAPP eq 'Manage Packages' or U_NAPP eq 'Intake'";
 			this.readServiecLayer("/b1s/v2/U_NCNFG" + filters, function (data) {
 				if (data.value.length > 0) {
 					var configObj = {};
@@ -195,6 +195,14 @@ sap.ui.define([
 						} else if (e.U_NFLDS === "Item Group Code") {
 							var itemGrpCodes = e.U_NVALUE;
 							jsonModel.setProperty("/itemGrpCodes", itemGrpCodes);
+						} else if (e.U_NFLDS === "Item groups") {
+							var itemGrpCodeIntake = e.U_NVALUE;
+							itemGrpCodeIntake = JSON.parse(itemGrpCodeIntake);
+							jsonModel.setProperty("/itemGrpCodeIntake", itemGrpCodeIntake);
+						} else if (e.U_NFLDS === "Pricing Tier") {
+							var pricingTier = e.U_NVALUE;
+							pricingTier = JSON.parse(pricingTier);
+							jsonModel.setProperty("/pricingTier", pricingTier);
 						}
 
 					});
@@ -513,7 +521,7 @@ sap.ui.define([
 			return id;
 		},
 		errorHandler: function (error) {
-			var resText = JSON.parse(error.responseText).error.message.value;
+			var resText = JSON.parse(error.responseText).error.message;
 			MessageBox.error(resText);
 			that.getView().setBusy(false);
 		},
@@ -887,7 +895,7 @@ sap.ui.define([
 						res.split("\r").forEach(function (sString) {
 							if (sString.indexOf("error") !== -1) {
 								var oString = JSON.parse(sString.replace(/\n/g, ""));
-								errorMessage = oString.error.message.value;
+								errorMessage = oString.error.message;
 							}
 						});
 					} catch (err) {
@@ -919,7 +927,7 @@ sap.ui.define([
 					if (error.statusText) {
 						MessageBox.error(error.statusText);
 					} else if (error.responseJSON) {
-						MessageBox.error(error.responseJSON.error.message.value);
+						MessageBox.error(error.responseJSON.error.message);
 					}
 
 				}
