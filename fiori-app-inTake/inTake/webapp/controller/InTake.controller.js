@@ -1202,7 +1202,7 @@ sap.ui.define([
 								"Quantity": rObj2[0].Quantity,
 								"ItemCode": rObj2[0].ItemCode
 							};
-							if (sObj.NEWPKG !== "") {
+							if (sObj.NEWPKG !== "" && sObj.NEWPKG !== "Select a New Tag") {
 								insideDocumentLines.BatchNumber = sObj.NEWPKG;
 								insideDocumentLines.Quantity = Number(sObj.shippedQuantityfromReqQty);
 							}
@@ -1216,7 +1216,7 @@ sap.ui.define([
 					var dpkgObj, dpTag;
 					if (sObj.AQTY && !sObj.isCannItem) {
 						$.each(sObj.PACKAGE, function (index, tag) {
-							if (sObj.NEWPKG !== "") {
+							if (sObj.NEWPKG !== "" && sObj.NEWPKG !== "Select a New Tag") {
 								dpTag = sObj.NEWPKG;
 							} else {
 								dpTag = tag;
