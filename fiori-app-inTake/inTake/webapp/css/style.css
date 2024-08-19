@@ -7,13 +7,13 @@
 }
 
 
-.batchdetailsCheckbox{
-	position: absolute;
+.batchdetailsCheckbox {
+    position: absolute;
     right: 30%;
 }
 
- .noTitle{
-	padding-right: 9%;
+.noTitle {
+    padding-right: 9%;
 }
 
 .headerTitle {
@@ -81,7 +81,7 @@
 }
 
 .lastUpdate {
-	opacity:1 !important;
+    opacity: 1 !important;
 }
 
 .sapUiRespGrid.sapUiRespGridHSpace1 {
@@ -90,8 +90,9 @@
     padding-bottom: 1rem;
     padding-left: 0.5rem;
 }
-.formCreateTras .sapUiFormContainerTitle>.sapUiFormTitle{
-	    height: 0rem;
+
+.formCreateTras .sapUiFormContainerTitle>.sapUiFormTitle {
+    height: 0rem;
 }
 
 
@@ -102,12 +103,20 @@
 .sapUiTableRowSel:not(.sapUiTableGroupHeader)>td:not(.sapUiTableTDDummy) .sapMText {
     color: #ffffff !important;
 }
+
 .sapUiTableRowSel:not(.sapUiTableGroupHeader)>td:not(.sapUiTableTDDummy) .sapMLnk {
     color: #ffffff !important;
 }
+
 .sapUiTableRowSel:not(.sapUiTableGroupHeader)>td:not(.sapUiTableTDDummy) .sapMBtnContent {
     color: #ffffff !important;
 }
-.sapUiTableRowHdr.sapUiTableRowSel{
+
+.sapUiTableRowHdr.sapUiTableRowSel {
     background-color: #0f5d94 !important;
+}
+
+.salesLabel {
+    font-size: .875rem !important;
+    color: #1d2d3e !important;
 }

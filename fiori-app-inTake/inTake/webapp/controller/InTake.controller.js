@@ -2274,7 +2274,8 @@ sap.ui.define([
 					U_Bugs: updateObject.U_Bugs,
 					U_SeedBana: updateObject.U_SeedBana,
 					U_Glass: updateObject.U_Glass,
-					IntrSerial: updateObject.IntrSerial
+					IntrSerial: updateObject.IntrSerial,
+					U_SalesNote: updateObject.U_SalesNote
 				};
 
 				var batchDetailsObj = {
@@ -2299,7 +2300,8 @@ sap.ui.define([
 					newTag: "",
 					newQty: "",
 					sItem: "",
-					ItemName: updateObject.ItemName,
+					U_SalesNote: updateObject.U_SalesNote,
+					ItemName: updateObject.ItemName
 				};
 				sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue("");
 				if (updateObject.IntrSerial != null || updateObject.IntrSerial != undefined) {
@@ -2358,7 +2360,8 @@ sap.ui.define([
 					"U_Bugs": batchDetailsObj.U_Bugs,
 					"U_SeedBana": batchDetailsObj.U_SeedBana,
 					"U_Glass": batchDetailsObj.U_Glass,
-					"U_PriceTier": priceTier
+					"U_PriceTier": priceTier,
+					"U_SalesNote": batchDetailsObj.U_SalesNote
 				};
 
 				that.updateServiecLayer("/b1s/v2/BatchNumberDetails(" + batchDetailsObj.BatchAbsEntry + ")", function (res) {
@@ -3227,6 +3230,20 @@ sap.ui.define([
 						"U_BatAttr3": sObj.METRCUID,
 						"U_IsPackage": "YES",
 						"U_Phase": "Package",
+						"U_Bottoms": sObj.U_Bottoms,
+						"U_Bugs": sObj.U_Bugs,
+						"U_Burned": sObj.U_Burned,
+						"U_CD": sObj.U_CD,
+						"U_Cart": sObj.U_Cart,
+						"U_Glass": sObj.U_Glass,
+						// "U_MetrcLicense": sObj.U_MetrcLicense,
+						// "U_MetrcLocation": sObj.U_MetrcLocation,
+						"U_PM": sObj.U_PM,
+						"U_Price": sObj.U_Price,
+						"U_SalesRep": sObj.U_SalesRep,
+						"U_SeedBana": sObj.U_SeedBana,
+						"U_Yellowhead": sObj.U_Yellowhead,
+						"U_SalesNote":sObj.U_SalesNote
 					}],
 					"DocumentLinesBinAllocations": [{
 						"BinAbsEntry": Number(locationID.split("-")[1]),
@@ -4031,14 +4048,16 @@ sap.ui.define([
 					var updateObject = PlannerTable.getContextByIndex(e).getObject().ItemName;
 					arr.push(updateObject);
 				});
-				var names = [...new Set(arr)];
-				var result = names.every(name => name.includes("Wet Cannabis"));
-				if (PlannerTable.getSelectedIndices().length > 0) {
+				if (arr.length > 0) {
+					var names = [...new Set(arr)];
+					var result = names.every(name => name.includes("Wet Cannabis"));
+					if (PlannerTable.getSelectedIndices().length > 0) {
 
-					if (result) {
-						jsonModel.setProperty("/enableChangeGrowth", true);
-					} else {
-						jsonModel.setProperty("/enableChangeGrowth", false);
+						if (result) {
+							jsonModel.setProperty("/enableChangeGrowth", true);
+						} else {
+							jsonModel.setProperty("/enableChangeGrowth", false);
+						}
 					}
 					// var rWaste = evt.getParameter("rowContext").getObject("ItemName");
 					// if (rWaste.includes("Wet Cannabis") == true) {
