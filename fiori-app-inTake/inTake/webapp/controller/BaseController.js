@@ -1400,7 +1400,8 @@ sap.ui.define([
 					"U_Price": sObj.sourcePkgData.U_Price,
 					"U_SalesRep": sObj.sourcePkgData.U_SalesRep,
 					"U_SeedBana": sObj.sourcePkgData.U_SeedBana,
-					"U_Yellowhead": sObj.sourcePkgData.U_Yellowhead
+					"U_Yellowhead": sObj.sourcePkgData.U_Yellowhead,
+					"U_SalesNote":sObj.sourcePkgData.U_SalesNote
 				}],
 				"DocumentLinesBinAllocations": [{
 					"BinAbsEntry": Number(AbslocationEntry),
