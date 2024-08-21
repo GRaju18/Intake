@@ -58,7 +58,7 @@
 			</FlexBox>
 		</content>
 		<beginButton>
-			<Button type="Emphasized" text="Update" press="onconfirmBatchDetails" enabled="{jsonModel>/enableOkBatch}"/>
+			<Button type="Emphasized" text="Update" press="onconfirmBatchDetails" />
 		</beginButton>
 		<endButton>
 			<Button type="Transparent" text="{i18n>Cancel}" press="onbatchDetailsClose"/>

@@ -2245,6 +2245,7 @@ sap.ui.define([
 				this._initialStates.U_Bugs !== oBatchDetails.U_Bugs ||
 				this._initialStates.U_SeedBana !== oBatchDetails.U_SeedBana ||
 				this._initialStates.U_Glass !== oBatchDetails.U_Glass ||
+				this._initialStates.U_SalesNote !== oBatchDetails.U_SalesNote ||
 				IntrSerialoldPrice !== pricenewValue ||
 				batchDetailsObjName !== batchComboBoxnewName
 			);
