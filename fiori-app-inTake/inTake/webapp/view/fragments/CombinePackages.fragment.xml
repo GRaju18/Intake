@@ -1,0 +1,67 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form">
+	<Dialog class="sapUiSizeCompact" stretch="{device>/system/phone}" title="Combine Packages" draggable="true" resizable="true">
+		<content>
+			<VBox>
+				<f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4" labelSpanM="12" labelSpanS="12"
+					adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="2"
+					singleContainerFullSize="false" class="noTitle">
+					<f:content>
+						<core:Title text=""/>
+						<Label text="Select Item" required="false"/>
+						<ComboBox id="combinePacknewItem" selectedKey="{jsonModel>/transLincense}" 
+							items="{path: 'jsonModel>/combinePackagesItems'}">
+							<!--<core:Item key="{jsonModel>CardCode}${jsonModel>CardForeignName}" text="{jsonModel>CardName} - {jsonModel>CardForeignName}"/>-->
+							<core:Item key="{jsonModel>ItemCode}@{jsonModel>ItemName}" text="{jsonModel>ItemName}" />
+						</ComboBox>
+						
+						<Label text="New Package" required="false"/>
+						<!--<ComboBox id="locationForTras" selectedKey="{jsonModel>/transLoc}"  items="{path: 'jsonModel>/binlocationData'}">-->
+						<!--	<core:Item key="{jsonModel>BinCode}" text="{jsonModel>Sublevel2}"/>-->
+						<!--</ComboBox>-->
+						<Select id="combineNewTag" forceSelection="false" items="{path: 'jsonModel>/harvestTagsData'}">
+							<core:Item key="{jsonModel>Label}" text="{jsonModel>Label}"/>
+						</Select>
+						<core:Title text=""/>
+						
+						<Label text="Total Quantity" required="false"/>
+						<Text text="{jsonModel>/totalQtyCombinepack}"/>
+						
+						
+					
+						<!--<core:Title text=""/>-->
+					</f:content>
+				</f:SimpleForm>
+			</VBox>
+			<VBox class="sapUiTinyMargin">
+				<Table id="CombinePackRowTable" inset="false" mode="None" items="{jsonModel>/combinePackagesRow}" width="100%" busy="{jsonModel>/combinetableBusy}">
+					<columns>
+						<Column width="20%">
+							<Label text="METRC UID" design="Bold"/>
+						</Column>
+						<Column width="20%">
+							<Label text="Item" design="Bold"/>
+						</Column>
+						<Column width="10%">
+							<Label text="Quantity" design="Bold"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{jsonModel>METRCUID}"/>
+								<Text text="{jsonModel>ItemName}"/>
+								<Text text="{jsonModel>Quantity}"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button type="Emphasized" text="Create" press="onCombinePackages"/>
+		</beginButton>
+		<endButton>
+			<Button type="Transparent" text="{i18n>Cancel}" press="oncloseCombinePackages"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

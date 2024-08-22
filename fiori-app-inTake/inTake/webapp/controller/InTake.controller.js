@@ -92,7 +92,7 @@ sap.ui.define([
 			var sSelect = "&$select=BinCode,U_MetrcLicense,U_MetrcLocation,U_Branch";
 			var order = "&$orderby=U_MetrcLicense asc,BinCode asc";
 			this.readServiecLayer("/b1s/v2/BinLocations" + sFilters + sSelect + order, function (data) {
-				if (userAccessLicense && userAccessLicense != undefined) {
+				if (userAccessLicense.length > 0 && userAccessLicense != undefined) {
 					$.each(userAccessLicense, function (i, m) {
 						$.each(data.value, function (j, n) {
 							if (m.key == n.U_MetrcLicense) {
@@ -115,7 +115,8 @@ sap.ui.define([
 					that.loadLocationData();
 				} else {
 					jsonModel.setProperty("/busyView", false);
-					jsonModel.setProperty("/licenseList", data.value);
+					sap.m.MessageBox.error("Locations not available for this user");
+					/*jsonModel.setProperty("/licenseList", data.value);
 					authModel.setProperty("/licenseList", data.value);
 					jsonModel.setProperty("/sLinObj", data.value[0]);
 					authModel.setProperty("/selectedLicense", data.value[0].U_MetrcLicense);
@@ -125,7 +126,7 @@ sap.ui.define([
 					jsonModel.setProperty("/selectedBranchNUM", data.value[0].U_Branch);
 					jsonModel.setProperty("/selectedLocationDesc", data.value[0].BinCode + " - " + data.value[0].U_MetrcLicense);
 					that.loadMasterData(data.value[0].U_MetrcLocation);
-					that.loadLocationData();
+					that.loadLocationData();*/
 				}
 			});
 		},
@@ -3244,7 +3245,7 @@ sap.ui.define([
 						"U_SalesRep": sObj.U_SalesRep,
 						"U_SeedBana": sObj.U_SeedBana,
 						"U_Yellowhead": sObj.U_Yellowhead,
-						"U_SalesNote":sObj.U_SalesNote
+						"U_SalesNote": sObj.U_SalesNote
 					}],
 					"DocumentLinesBinAllocations": [{
 						"BinAbsEntry": Number(locationID.split("-")[1]),
@@ -3311,6 +3312,360 @@ sap.ui.define([
 		columnMove: function (evt) {
 
 		},
+
+		/*** combine packages starts ***/
+
+		handlecombinePackages: function () {
+			var sObj;
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var itemCodeList;
+			jsonModel.setProperty("/NPDNMCode", "");
+			this.loadItemData();
+			if (!this.CombinePackages) {
+				this.CombinePackages = sap.ui.xmlfragment("CombinePackages", "com.9b.inTake.view.fragments.CombinePackages", this);
+				this.getView().addDependent(this.CombinePackages);
+			}
+			var sArrayObj = [];
+			var harvestTable = this.byId("inTakeTable");
+			if (harvestTable.getSelectedIndices().length === 0) {
+				sap.m.MessageToast.show("Please select a batch");
+				return;
+			} else {
+				var sItems;
+				var table = this.getView().byId("inTakeTable");
+				sItems = table.getSelectedIndices();
+				var countQty = 0;
+				$.each(sItems, function (i, e) {
+					sObj = table.getContextByIndex(e).getObject();
+					sObj.STATUSQTY = "None";
+					sObj.U_NLABEL = "";
+					sObj.QTYTXT = "";
+					sObj.NQNTY = "";
+					sObj.tagCode = "";
+					sObj.NTRID = "";
+					sObj.NSTLN = "";
+					sObj.NSTLNCODE = "";
+					sObj.NPDNMText = "";
+					sObj.selectedItemKey = "";
+					//sObj.NPDNMCode = "";
+					sObj.SNO = "#" + (i + 1);
+					sObj.itemList = [];
+
+					countQty = countQty + sObj.Quantity;
+					// if (sObj.ItemName && sObj.ItemName.search("Clone") !== -1) {
+					// 	itemCodeList = jsonModel.getProperty("/cloneItemCodeList");
+					// } else {
+					// 	itemCodeList = jsonModel.getProperty("/itemCodeList");
+					// }
+					itemCodeList = jsonModel.getProperty("/allItemsList");
+
+					// var rObj = $.grep(itemCodeList, function (item) {
+					// 	if (item.ItemName !== "" && item.ItemName.search(sObj.StrainName) !== -1) {
+					// 		return item;
+					// 	}
+					// });
+					// if (rObj.length > 0) {
+					// 	sObj.itemList = rObj;
+					// }
+
+					var rObj = $.grep(itemCodeList, function (item) {
+						if (item.ItemName !== "" && item.ItemName.search(sObj.ItemName) !== -1) {
+							return item;
+						}
+					});
+					if (rObj.length > 0) {
+						var arr = [];
+						var rObj2 = $.grep(itemCodeList, function (item) {
+							if (rObj[0].ItemsGroupCode == item.ItemsGroupCode) {
+								arr.push(item);
+							}
+						});
+						sObj.itemList = arr;
+						jsonModel.setProperty("/combinePackagesItems", arr);
+					}
+
+					// var rObj = $.grep(itemCodeList, function (item) {
+					// 	if (sObj.ItemName == item.ItemName) {
+					// 		return item;
+					// 	}
+					// });
+					// if (rObj.length > 0) {
+					// 	sObj.NPDNMCode = rObj[0].ItemCode;
+					// 	sObj.NPDNMText = rObj[0].ItemName;
+					// 	sObj.ProductCost = rObj[0].ProdStdCost;
+					// 	sObj.UOMCode = rObj[0].InventoryUOM;
+					// }
+
+					sArrayObj.push(sObj);
+				});
+
+				jsonModel.setProperty("/totalQtyCombinepack", countQty);
+			}
+			jsonModel.setProperty("/combinePackagesRow", sArrayObj);
+			sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").setSelectedKey("");
+			sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").setSelectedKey("");
+
+			jsonModel.setProperty("/temChangeLoc", "");
+			this.CombinePackages.open();
+			this.loadTagsDataInPkg();
+			this.loadLocationsDataInPkg();
+		},
+
+		onCombinePackages: function () {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var combinePackagesRowData = jsonModel.getProperty("/combinePackagesRow");
+			var ChangeLocationList = jsonModel.getProperty("/harvestLocData");
+			var cDate = this.convertUTCDate(new Date());
+			var metrcData = jsonModel.getProperty("/metrcData");
+			var that = this;
+			var createPackage = this.CombinePackages;
+			var count = combinePackagesRowData.length;
+			var totalQtyCombinepack = jsonModel.getProperty("/totalQtyCombinepack");
+			// validation
+			var selectedPackages = [];
+			var isValidated = true;
+			var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
+			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getSelectedKey();
+
+			if (SelectedItem == "") {
+				sap.m.MessageToast.show("Please select Item");
+				isValidated = false;
+			}
+			if (newMetrcTag == "") {
+				sap.m.MessageToast.show("Please select new package");
+				isValidated = false;
+			}
+
+			if (isValidated) {
+				var payLoadInventoryEntry = {};
+				var payLoadInventoryExit = {};
+				var metricPayload = [];
+
+				var metricobj = {
+					Tag: newMetrcTag,
+					Location: ChangeLocationList[0].U_MetrcLocation, //sObj.U_MetrcLocation,
+					Item: SelectedItem.split("@")[1], //sObj.ItemName,
+					Quantity: Number(totalQtyCombinepack),
+					UnitOfMeasure: "Pounds",
+					// PatientLicenseNumber: null,
+					// Note: "Combine Packages",
+					// IsProductionBatch: false,
+					// IsDonation: false,
+					// ProductRequiresRemediation: false,
+					// UseSameItem: false,
+					ActualDate: that.getSystemDate(),
+					Ingredients: [
+						// 	{
+						// 	Package: sObj.METRCUID,
+						// 	Quantity: Number(quantity),
+						// 	UnitOfMeasure: sObj.UOMCode
+						// }
+					]
+				};
+
+				$.each(combinePackagesRowData, function (i, sObj) {
+					var object = {
+						Package: sObj.METRCUID,
+						Quantity: Number(sObj.Quantity),
+						UnitOfMeasure: "Pounds"
+					};
+
+					metricobj.Ingredients.push(object);
+				});
+
+				metricPayload.push(metricobj);
+
+				if (metrcData && metrcData.U_NACST === "X") {
+					var metrcUrl = "/packages/v2/?licenseNumber=" + jsonModel.getProperty("/selectedLicense");
+					that.CombinePackages.setBusy(true);
+					that.callMetricsService(metrcUrl, "POST", metricPayload, function () {
+						// that.createPackage.setBusy(false);
+						sap.m.MessageToast.show("METRC sync completed successfully");
+						that.CombinePackagestoTable();
+					}, function (error) {
+						sap.m.MessageToast.show(JSON.stringify(error));
+						that.CombinePackages.setBusy(false);
+					});
+				} else {
+
+					that.CombinePackagestoTable();
+				}
+			}
+		},
+
+		CombinePackagestoTable: function () {
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			var combinePackagesRowData = jsonModel.getProperty("/combinePackagesRow");
+			var ChangeLocationList = jsonModel.getProperty("/harvestLocData");
+			var cDate = this.convertUTCDate(new Date());
+			var metrcData = jsonModel.getProperty("/metrcData");
+			var allItemsLists = jsonModel.getProperty("/allItemsList");
+			var that = this;
+			var createPackage = this.CombinePackages;
+			var count = combinePackagesRowData.length;
+			var totalQtyCombinepack = jsonModel.getProperty("/totalQtyCombinepack");
+			// validation
+			var selectedPackages = [];
+			var isValidated = true;
+			var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
+			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getSelectedKey();
+			var that = this;
+
+			var payLoadProduction = {
+				"ItemNo": SelectedItem.split("@")[0],
+				"PlannedQuantity": totalQtyCombinepack, //updateObject.Quantity,
+				"ProductionOrderType": "bopotSpecial",
+				"PostingDate": cDate,
+				"DueDate": cDate,
+				"Warehouse": combinePackagesRowData[0].WhsCode,
+				"Remarks": "Manage Inventory – Combine Packages",
+				"ProductionOrderLines": []
+			}
+
+			$.each(combinePackagesRowData, function (i, obj) {
+
+				var rObj = $.grep(allItemsLists, function (item) {
+					if (item.ItemName && obj.ItemName && obj.ItemName == item.ItemName) {
+						return item;
+					}
+				});
+
+				var insideObj = {
+					"ItemNo": rObj[0].ItemCode,
+					"PlannedQuantity": obj.Quantity,
+					"ProductionOrderIssueType": "im_Manual",
+					"Warehouse": obj.WhsCode,
+				};
+
+				payLoadProduction.ProductionOrderLines.push(insideObj);
+
+			});
+
+			var batchUrl = [];
+			that.updateServiecLayer("/b1s/v2/ProductionOrders", function (res) {
+				var docNUM = Number(res.AbsoluteEntry);
+				var BaseLine = res;
+
+				var rObj = $.grep(ChangeLocationList, function (sLoc) {
+					if (sLoc.BinCode === combinePackagesRowData[0].BinLocationCode) {
+						return sLoc;
+					}
+				});
+				var absEntry = rObj[0].AbsEntry;
+
+				var fisrtPatchCall = {
+					"ProductionOrderStatus": "boposReleased",
+				};
+
+				batchUrl.push({
+					url: "/b1s/v2/ProductionOrders(" + docNUM + ")",
+					data: fisrtPatchCall,
+					method: "PATCH"
+				});
+
+				var payLoadInventoryExits = {
+					"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
+					"Comments": "Manage Inventory - Combine packages",
+					"DocumentLines": []
+				};
+				var sourceEntry = combinePackagesRowData.map(item => item.METRCUID).join(", ");
+
+				$.each(combinePackagesRowData, function (i, sObj) {
+					payLoadInventoryExits.DocumentLines.push({
+
+						"WarehouseCode": sObj.WhsCode,
+						"BaseType": 202,
+						"BaseEntry": docNUM,
+						"BaseLine": i,
+						"Quantity": sObj.Quantity,
+						"BatchNumbers": [{
+							"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
+							"Quantity": sObj.Quantity, //<THIS IS THE QTY OF CLONES>
+							"Location": sObj.BinLocationCode, //updateObject.WhsCode, //<THIS IS FROM CLONE ROOM>
+							"U_BatAttr3": sObj.SourceUID, //updateObject.SourceUID, //sourceTag
+							"ManufacturerSerialNumber": sObj.HarvestName //harvestTag
+						}],
+						"DocumentLinesBinAllocations": [{
+							"BinAbsEntry": Number(absEntry),
+							"Quantity": sObj.Quantity,
+							"SerialAndBatchNumbersBaseLine": 0
+						}]
+
+					});
+
+				});
+
+				batchUrl.push({
+					url: "/b1s/v2/InventoryGenExits",
+					data: payLoadInventoryExits,
+					method: "POST"
+				});
+
+				var payLoadInventoryEntry1 = {
+					"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
+					"Comments": "Manage Inventory - Combine packages",
+					"DocumentLines": [{
+
+						"WarehouseCode": combinePackagesRowData[0].WhsCode, // <THIS IS FROM CLONE ROOM>
+						"BaseType": 202,
+						"BaseEntry": docNUM,
+						"Quantity": totalQtyCombinepack, //updateObject.Quantity, // <THIS IS THE QTY OF CLONES>
+						// "UnitPrice": Number(ProdStdCost),
+						"BatchNumbers": [{
+							"BatchNumber": newMetrcTag, // <THIS IS TAG>
+							"Quantity": totalQtyCombinepack, //updateObject.Quantity, //<THIS IS THE QTY OF CLONES>
+							"Location": combinePackagesRowData[0].BinLocationCode,
+							//<THIS IS FROM CLONE ROOM>
+							"U_Phase": "Package",
+							"U_IsPackage": "YES",
+							"ManufacturerSerialNumber": combinePackagesRowData[0].HarvestName, //harvestTag
+							"U_BatAttr3": combinePackagesRowData[0].METRCUID //sourceEntry //combinePackagesRowData[0].METRCUID, //sourceTag
+						}],
+						"DocumentLinesBinAllocations": [{
+							"BinAbsEntry": Number(absEntry),
+							"Quantity": totalQtyCombinepack, //updateObject.Quantity,
+							"SerialAndBatchNumbersBaseLine": 0
+
+						}]
+					}]
+				};
+				batchUrl.push({
+					url: "/b1s/v2/InventoryGenEntries",
+					data: payLoadInventoryEntry1,
+					method: "POST"
+				});
+
+				var secondPatchCall = {
+					"ProductionOrderStatus": "boposClosed",
+				};
+
+				batchUrl.push({
+					url: "/b1s/v2/ProductionOrders(" + Number(docNUM) + ")",
+					data: secondPatchCall,
+					method: "PATCH"
+				});
+
+				if (batchUrl.length > 0) {
+
+					this.createBatchCall(batchUrl, function () {
+						jsonModel.setProperty("/busyView", false);
+
+						that.CombinePackages.setBusy(false);
+						that.getView().byId("inTakeTable").clearSelection();
+						that.loadMasterData();
+						that.CombinePackages.close();
+					}, this.CombinePackages);
+
+				}
+
+			}.bind(that), payLoadProduction, "POST");
+		},
+
+		oncloseCombinePackages: function () {
+			this.CombinePackages.close();
+		},
+		/*** combine packages ends ***/
+
 		rowSelectionChange: function (evt) {
 			var sObj = evt.getParameter("rowContext").getObject();
 			if (sObj.U_NSTUS === "Transfer Created") {

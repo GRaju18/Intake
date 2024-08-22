@@ -1,7 +1,7 @@
 {
     "tiles": [
       {
-        "text": "Intake",
+        "text": "Manage Inventory",
         "subtitle": "",
         "icon": "sap-icon://general-leave-request"
       }

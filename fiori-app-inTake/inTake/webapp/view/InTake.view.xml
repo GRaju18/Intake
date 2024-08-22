@@ -56,8 +56,9 @@
 							<Button type="Default" press="handleInventoryTransfer" text="{i18n>InventaryTransfer}" visible="{jsonModel>/configData/V_CTR}"/>
 							<Button type="Default" press="handlechangeLocation" text="{i18n>ChangeLocation}"/>
 							<Button type="Default" press="handleTransferTemplate" text="Create Transfer"/>
+							<Button type="Default" press="handlecombinePackages" text="Combine Packages"/>
 							<Button type="Default" press="handleBatchDetails" text="Batch Details" enabled="{jsonModel>/batchDetailButton}" />
-							<Button text="Move to Drying" press="onConfirmChangeGrowthPhase" type="Default" enabled="{jsonModel>/enableChangeGrowth}" />
+							<!--<Button text="Move to Drying" press="onConfirmChangeGrowthPhase" type="Default" enabled="{jsonModel>/enableChangeGrowth}" />-->
 							<Button type="Default" press="handlechangeItemsMETRC" text="Change Items"/>
 							<!--	<Button text="Mark as Mother" press="handlemarkasMother" type="Default"/>-->
 							<Button type="Ghost" press="handleAdjust" text="{i18n>Adjust}" visible="{jsonModel>/configData/V_ADJ}"/>
