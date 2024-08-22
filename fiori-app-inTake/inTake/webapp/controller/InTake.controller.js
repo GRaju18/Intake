@@ -54,6 +54,7 @@ sap.ui.define([
 				this.getMetricsCredentials();
 				this.getUsersService();
 				//this.loadLicenseData();
+			
 			}
 		},
 
@@ -3320,6 +3321,7 @@ sap.ui.define([
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var itemCodeList;
 			jsonModel.setProperty("/NPDNMCode", "");
+			var itemGrpCodesIntake = jsonModel.getProperty("/itemGrpCodeIntake");
 			this.loadItemData();
 			if (!this.CombinePackages) {
 				this.CombinePackages = sap.ui.xmlfragment("CombinePackages", "com.9b.inTake.view.fragments.CombinePackages", this);
@@ -3335,6 +3337,8 @@ sap.ui.define([
 				var table = this.getView().byId("inTakeTable");
 				sItems = table.getSelectedIndices();
 				var countQty = 0;
+				var arr = [];
+				itemCodeList = jsonModel.getProperty("/allItemsList");
 				$.each(sItems, function (i, e) {
 					sObj = table.getContextByIndex(e).getObject();
 					sObj.STATUSQTY = "None";
@@ -3357,7 +3361,7 @@ sap.ui.define([
 					// } else {
 					// 	itemCodeList = jsonModel.getProperty("/itemCodeList");
 					// }
-					itemCodeList = jsonModel.getProperty("/allItemsList");
+				
 
 					// var rObj = $.grep(itemCodeList, function (item) {
 					// 	if (item.ItemName !== "" && item.ItemName.search(sObj.StrainName) !== -1) {
@@ -3367,22 +3371,22 @@ sap.ui.define([
 					// if (rObj.length > 0) {
 					// 	sObj.itemList = rObj;
 					// }
-
-					var rObj = $.grep(itemCodeList, function (item) {
-						if (item.ItemName !== "" && item.ItemName.search(sObj.ItemName) !== -1) {
-							return item;
-						}
-					});
-					if (rObj.length > 0) {
-						var arr = [];
-						var rObj2 = $.grep(itemCodeList, function (item) {
-							if (rObj[0].ItemsGroupCode == item.ItemsGroupCode) {
-								arr.push(item);
-							}
-						});
-						sObj.itemList = arr;
-						jsonModel.setProperty("/combinePackagesItems", arr);
-					}
+					
+					// var rObj = $.grep(itemCodeList, function (item) {
+					// 	if (item.ItemName !== "" && item.ItemName.search(sObj.ItemName) !== -1) {
+					// 		return item;
+					// 	}
+					// });
+					// if (rObj.length > 0) {
+					
+					// 	var rObj2 = $.grep(itemCodeList, function (item) {
+					// 		if (rObj[0].ItemsGroupCode == item.ItemsGroupCode) {
+					// 			arr.push(item);
+					// 		}
+					// 	});
+					// 	sObj.itemList = arr;
+					// 	jsonModel.setProperty("/combinePackagesItems", arr);
+					// }
 
 					// var rObj = $.grep(itemCodeList, function (item) {
 					// 	if (sObj.ItemName == item.ItemName) {
@@ -3398,7 +3402,15 @@ sap.ui.define([
 
 					sArrayObj.push(sObj);
 				});
-
+				
+					$.each(itemGrpCodesIntake, function(i,m){
+						var rObj2 = $.grep(itemCodeList, function (item) {
+							if (m.key == item.ItemsGroupCode) {
+								arr.push(item);
+							}
+						});
+					});
+				jsonModel.setProperty("/combinePackagesItems", arr);
 				jsonModel.setProperty("/totalQtyCombinepack", countQty);
 			}
 			jsonModel.setProperty("/combinePackagesRow", sArrayObj);
