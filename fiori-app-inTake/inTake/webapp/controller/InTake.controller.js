@@ -3619,7 +3619,7 @@ sap.ui.define([
 							"U_Phase": "Package",
 							"U_IsPackage": "YES",
 							"ManufacturerSerialNumber": combinePackagesRowData[0].HarvestName, //harvestTag
-							"U_BatAttr3": combinePackagesRowData[0].METRCUID //sourceEntry //combinePackagesRowData[0].METRCUID, //sourceTag
+							"U_BatAttr3": sourceEntry //combinePackagesRowData[0].METRCUID, //sourceTag
 						}],
 						"DocumentLinesBinAllocations": [{
 							"BinAbsEntry": Number(absEntry),
