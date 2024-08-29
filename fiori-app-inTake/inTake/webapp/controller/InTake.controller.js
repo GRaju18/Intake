@@ -54,7 +54,7 @@ sap.ui.define([
 				this.getMetricsCredentials();
 				this.getUsersService();
 				//this.loadLicenseData();
-			
+
 			}
 		},
 
@@ -2739,115 +2739,161 @@ sap.ui.define([
 						exitProdStdCost = obj.ProdStdCost;
 					}
 				});
-
 				changeItemDialog.setBusy(true);
-				var payLoadInventoryEntry = {
-					"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
-					"PaymentGroupCode": 2,
-					"Comments": "Manage Packages - Change Item",
-					"DocumentLines": []
+
+				var payLoadProduction = {
+					"ItemNo": sObj.newItemCode, //newItemcode
+					"PlannedQuantity": sObj.Quantity, //updateObject.Quantity,
+					"ProductionOrderType": "bopotSpecial",
+					"PostingDate": cDate,
+					"DueDate": cDate,
+					"Warehouse": sObj.WhsCode,
+					"Remarks": "Manage packages - Change Item",
+					"ProductionOrderLines": [{
+							"ItemNo": sObj.ItemCode, // row item
+							"PlannedQuantity": sObj.Quantity,
+							"ProductionOrderIssueType": "im_Manual",
+							"Warehouse": sObj.WhsCode
+						}
+
+					]
 				};
-				payLoadInventoryEntry.DocumentLines.push({
-					"ItemCode": sObj.newItemCode,
-					// "ItmGrpCode": 100,
-					"WarehouseCode": sObj.WhsCode,
-					"Quantity": sObj.Quantity,
-					// "CostingCode": costingCode,
-					"UnitPrice": Number(ProdStdCost),
-					"BatchNumbers": [{
-						"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
-						"Quantity": sObj.Quantity, //<THIS IS THE QTY OF CLONES>
-						"Location": sObj.BinLocationCode, //<THIS IS FROM CLONE ROOM>
-						"ManufacturerSerialNumber": sObj.HarvestName,
-						"U_BatAttr3": sObj.SourceUID,
-						"U_IsPackage": "YES",
-						"U_Phase": "Package",
-					}],
-					"DocumentLinesBinAllocations": [{
-						"BinAbsEntry": Number(absEntry),
-						"Quantity": sObj.Quantity,
-						"SerialAndBatchNumbersBaseLine": 0
-					}]
-				});
 
-				var payLoadInventoryExit = {
-					"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
-					"PaymentGroupCode": 2,
-					"Comments": "Manage Packages - Change Item",
-					"DocumentLines": []
-				};
-				payLoadInventoryExit.DocumentLines.push({
-					"ItemCode": sObj.ItemCode,
-					// "ItmGrpCode": 100,
-					"WarehouseCode": sObj.WhsCode,
-					"Quantity": sObj.Quantity,
-					"UnitPrice": Number(exitProdStdCost),
-					// "CostingCode": costingCode, exitProdStdCost
-					"BatchNumbers": [{
-						"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
-						"Quantity": sObj.Quantity,
-						"Location": sObj.BinLocationCode
-					}],
-					"DocumentLinesBinAllocations": [{
-						"BinAbsEntry": Number(absEntry),
-						"Quantity": sObj.Quantity,
-						"SerialAndBatchNumbersBaseLine": 0
-					}]
-				});
+				that.updateServiceLayerBatch("/b1s/v2/ProductionOrders", function (res) {
+					var docNUM = Number(res.AbsoluteEntry);
 
-				var patchpayload = {
-					"Status": "bdsStatus_NotAccessible"
-				};
-				that.updateServiceLayerBatch("/b1s/v2/InventoryGenExits", function (resExit, sDataExit) {
+					var fisrtPatchCall = {
+						"ProductionOrderStatus": "boposReleased",
+					};
+					var secondPatchCall = {
+						"ProductionOrderStatus": "boposClosed",
+					};
 
-					that.updateServiceLayerBatch("/b1s/v2/BatchNumberDetails(" + sObj.BatchAbsEntry + ")", function (resEntry, sDataEntry) {
+					that.updateServiceLayerBatch("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
 
-						that.updateServiceLayerBatch("/b1s/v2/InventoryGenEntries", function (resEntry, sDataEntry) {
+						var payLoadInventoryEntry = {
+							"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
+							// "PaymentGroupCode": 2,
+							"Comments": "Manage Packages - Change Item",
+							"DocumentLines": []
+						};
+						payLoadInventoryEntry.DocumentLines.push({
+							// "ItemCode": sObj.newItemCode,
+							// "ItmGrpCode": 100,
+							"BaseType": 202,
+							"BaseEntry": docNUM,
+							"WarehouseCode": sObj.WhsCode,
+							"Quantity": sObj.Quantity,
+							// "CostingCode": costingCode,
+							// "UnitPrice": Number(ProdStdCost),
+							"BatchNumbers": [{
+								"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
+								"Quantity": sObj.Quantity, //<THIS IS THE QTY OF CLONES>
+								"Location": sObj.BinLocationCode, //<THIS IS FROM CLONE ROOM>
+								"ManufacturerSerialNumber": sObj.HarvestName,
+								"U_BatAttr3": sObj.SourceUID,
+								"U_IsPackage": "YES",
+								"U_Phase": "Package",
+							}],
+							"DocumentLinesBinAllocations": [{
+								"BinAbsEntry": Number(absEntry),
+								"Quantity": sObj.Quantity,
+								"SerialAndBatchNumbersBaseLine": 0
+							}]
+						});
 
-							var licenseNo = jsonModel.getProperty("/selectedLicense");
-							var filters = "?$filter=U_MetrcLicense eq " + "'" + licenseNo + "' and U_Phase eq 'Package' and Status eq '1'";
-							this.readServiecLayer("/b1s/v2/sml.svc/CV_GH_BATCHQUERY_VW" + filters, function (data) {
+						var payLoadInventoryExit = {
+							"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
+							// "PaymentGroupCode": 2,
+							"Comments": "Manage Packages - Change Item",
+							"DocumentLines": []
+						};
+						payLoadInventoryExit.DocumentLines.push({
+							// "ItemCode": sObj.ItemCode,
+							// "ItmGrpCode": 100,
+							"BaseType": 202,
+							"BaseEntry": docNUM,
+							"BaseLine": 0,
+							"WarehouseCode": sObj.WhsCode,
+							"Quantity": sObj.Quantity,
+							// "UnitPrice": Number(exitProdStdCost),
+							// "CostingCode": costingCode, exitProdStdCost
+							"BatchNumbers": [{
+								"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
+								"Quantity": sObj.Quantity,
+								"Location": sObj.BinLocationCode
+							}],
+							"DocumentLinesBinAllocations": [{
+								"BinAbsEntry": Number(absEntry),
+								"Quantity": sObj.Quantity,
+								"SerialAndBatchNumbersBaseLine": 0
+							}]
+						});
 
-								var returnObj = $.grep(data.value, function (sItem) {
-									if (sObj.newItemCode === sItem.ItemCode) {
-										return sItem;
-									}
-								});
+						var patchpayload = {
+							"Status": "bdsStatus_NotAccessible"
+						};
+						that.updateServiceLayerBatch("/b1s/v2/InventoryGenExits", function (resExit, sDataExit) {
 
-								if (returnObj.length > 0) {
+							that.updateServiceLayerBatch("/b1s/v2/BatchNumberDetails(" + sObj.BatchAbsEntry + ")", function (resEntry, sDataEntry) {
 
-									var finalpatchpayload = {
-										"Status": "bdsStatus_Released"
-									};
+								that.updateServiceLayerBatch("/b1s/v2/InventoryGenEntries", function (resEntry, sDataEntry) {
 
-									that.updateServiceLayerBatch("/b1s/v2/BatchNumberDetails(" + Number(returnObj[0].BatchAbsEntry) + ")", function (
-										resEntry, sDataEntry) {
-										count--;
-										if (count === 0) {
-											changeItemDialog.setBusy(false);
-											changeItemDialog.close();
-											sap.m.MessageToast.show("Package Created Successfully");
-											that.byId("inTakeTable").clearSelection();
-											that.loadMasterData();
+									var licenseNo = jsonModel.getProperty("/selectedLicense");
+									var filters = "?$filter=U_MetrcLicense eq " + "'" + licenseNo + "' and U_Phase eq 'Package' and Status eq '1'";
+									this.readServiecLayer("/b1s/v2/sml.svc/CV_GH_BATCHQUERY_VW" + filters, function (data) {
+
+										var returnObj = $.grep(data.value, function (sItem) {
+											if (sObj.newItemCode === sItem.ItemCode) {
+												return sItem;
+											}
+										});
+
+										if (returnObj.length > 0) {
+
+											var finalpatchpayload = {
+												"Status": "bdsStatus_Released"
+											};
+
+											that.updateServiceLayerBatch("/b1s/v2/BatchNumberDetails(" + Number(returnObj[0].BatchAbsEntry) + ")",
+												function (
+													resEntry, sDataEntry) {
+													that.updateServiceLayerBatch("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
+														count--;
+														if (count === 0) {
+															changeItemDialog.setBusy(false);
+															changeItemDialog.close();
+															sap.m.MessageToast.show("Package Created Successfully");
+															that.byId("inTakeTable").clearSelection();
+															that.loadMasterData();
+														}
+
+													}.bind(that), secondPatchCall, "PATCH");
+												}, finalpatchpayload, "PATCH");
+
+										} else {
+											that.updateServiceLayerBatch("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
+												count--;
+												if (count === 0) {
+													changeItemDialog.setBusy(false);
+													changeItemDialog.close();
+													sap.m.MessageToast.show("Package Created Successfully");
+													that.byId("inTakeTable").clearSelection();
+													that.loadMasterData();
+												}
+											}.bind(that), secondPatchCall, "PATCH");
 										}
-									}, finalpatchpayload, "PATCH");
 
-								} else {
-									count--;
-									if (count === 0) {
-										changeItemDialog.setBusy(false);
-										changeItemDialog.close();
-										sap.m.MessageToast.show("Package Created Successfully");
-										that.byId("inTakeTable").clearSelection();
-										that.loadMasterData();
-									}
-								}
+									});
 
-							});
+								}, payLoadInventoryEntry, "POST");
+							}, patchpayload, "PATCH");
+						}, payLoadInventoryExit, "POST");
 
-						}, payLoadInventoryEntry, "POST");
-					}, patchpayload, "PATCH");
-				}, payLoadInventoryExit, "POST");
+					}.bind(that), fisrtPatchCall, "PATCH");
+
+				}.bind(that), payLoadProduction, "POST");
+
 			});
 		},
 
@@ -3199,6 +3245,7 @@ sap.ui.define([
 				var qty = 0;
 				var payLoadInventoryEntry = {};
 				var payLoadInventoryExit = {};
+				var batchUrl = [];
 				var locationID = sObj.NSTLN,
 					AbslocationEntry = "";
 				qty = Number(sObj.NQNTY);
@@ -3213,84 +3260,144 @@ sap.ui.define([
 					}
 				});
 
-				payLoadInventoryEntry = {
-					"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
-					"Comments": "Manage Packages - New Packages",
-					"DocumentLines": []
-				};
-				payLoadInventoryEntry.DocumentLines.push({
-					"ItemCode": sObj.NPDNMCode, //sObj.ItemCode,
-					// "ItmGrpCode": 100,
-					"WarehouseCode": sObj.WhsCode,
-					"Quantity": quantity,
-					"UnitPrice": sObj.ProductCost,
-					"BatchNumbers": [{
-						"BatchNumber": BatchNumber, // <THIS IS TAG>
-						"Quantity": quantity, //<THIS IS THE QTY OF CLONES>
-						"Location": locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split("-")[1], "").replace(
-							"-", ""), //<THIS IS FROM CLONE ROOM>
-						"ManufacturerSerialNumber": sObj.HarvestName,
-						"U_BatAttr3": sObj.METRCUID,
-						"U_IsPackage": "YES",
-						"U_Phase": "Package",
-						"U_Bottoms": sObj.U_Bottoms,
-						"U_Bugs": sObj.U_Bugs,
-						"U_Burned": sObj.U_Burned,
-						"U_CD": sObj.U_CD,
-						"U_Cart": sObj.U_Cart,
-						"U_Glass": sObj.U_Glass,
-						// "U_MetrcLicense": sObj.U_MetrcLicense,
-						// "U_MetrcLocation": sObj.U_MetrcLocation,
-						"U_PM": sObj.U_PM,
-						"U_Price": sObj.U_Price,
-						"U_SalesRep": sObj.U_SalesRep,
-						"U_SeedBana": sObj.U_SeedBana,
-						"U_Yellowhead": sObj.U_Yellowhead,
-						"U_SalesNote": sObj.U_SalesNote
-					}],
-					"DocumentLinesBinAllocations": [{
-						"BinAbsEntry": Number(locationID.split("-")[1]),
-						"Quantity": quantity,
-						"SerialAndBatchNumbersBaseLine": 0
-					}]
-				});
-
-				payLoadInventoryExit = {
-					"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
-					"Comments": "Manage Packages - New Packages",
-					"DocumentLines": []
-				};
-				payLoadInventoryExit.DocumentLines.push({
-					//"ItemCode": sObj.NPDNMCode,
-					"ItemCode": sObj.ItemCode, //changed by susmita
-					// "ItmGrpCode": 100,
-					"WarehouseCode": sObj.WhsCode,
-					"Quantity": quantity,
-					"BatchNumbers": [{
-						"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
-						"Quantity": quantity, //<THIS IS THE QTY OF CLONES>
-						"Location": sObj.BinLocationCode //<THIS IS FROM CLONE ROOM>
-					}],
-					"DocumentLinesBinAllocations": [{
-						"BinAbsEntry": Number(AbslocationEntry),
-						"Quantity": quantity,
-						"SerialAndBatchNumbersBaseLine": 0
-					}]
-				});
-
-				// that.updateServiecLayer("/b1s/v2/NMPCL", function () {
-				that.updateServiecLayer("/b1s/v2/InventoryGenEntries", function (resEntry, sDataEntry) {
-					that.updateServiecLayer("/b1s/v2/InventoryGenExits", function (resExit, sDataExit) {
-						count--;
-						if (count == 0) {
-							that.createPackage.setBusy(false);
-							that.createPackage.close();
-							sap.m.MessageToast.show("Package created successfully");
-							that.byId("inTakeTable").clearSelection();
-							that.loadMasterData();
+				var payLoadProduction = {
+					"ItemNo": sObj.NPDNMCode,
+					"PlannedQuantity": quantity, //sObj.Quantity, //updateObject.Quantity,
+					"ProductionOrderType": "bopotSpecial",
+					"PostingDate": cDate,
+					"DueDate": cDate,
+					"Warehouse": sObj.WhsCode,
+					"Remarks": "Manage Inventory - New Package",
+					"ProductionOrderLines": [{
+							"ItemNo": sObj.ItemCode, // selected item
+							"PlannedQuantity": quantity, // sObj.Quantity,
+							"ProductionOrderIssueType": "im_Manual",
+							"Warehouse": sObj.WhsCode,
 						}
-					}, payLoadInventoryExit, "POST");
-				}, payLoadInventoryEntry, "POST");
+
+					]
+				};
+
+				that.updateServiecLayer("/b1s/v2/ProductionOrders", function (res) {
+					var docNUM = Number(res.AbsoluteEntry);
+
+					var fisrtPatchCall = {
+						"ProductionOrderStatus": "boposReleased",
+					};
+
+					batchUrl.push({
+						url: "/b1s/v2/ProductionOrders(" + docNUM + ")",
+						data: fisrtPatchCall,
+						method: "PATCH"
+					});
+
+					payLoadInventoryEntry = {
+						"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
+						"Comments": "Manage Inventory - New Packages",
+						"DocumentLines": []
+					};
+					payLoadInventoryEntry.DocumentLines.push({
+						// "ItemCode": sObj.NPDNMCode, //sObj.ItemCode,
+						// "ItmGrpCode": 100,
+						"BaseType": 202,
+						"BaseEntry": docNUM,
+						"WarehouseCode": sObj.WhsCode,
+						"Quantity": quantity,
+						// "UnitPrice": sObj.ProductCost,
+						"BatchNumbers": [{
+							"BatchNumber": BatchNumber, // <THIS IS TAG>
+							"Quantity": quantity, //<THIS IS THE QTY OF CLONES>
+							"Location": locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split("-")[1], "").replace(
+								"-", ""), //<THIS IS FROM CLONE ROOM>
+							"ManufacturerSerialNumber": sObj.HarvestName,
+							"U_BatAttr3": sObj.METRCUID,
+							"U_IsPackage": "YES",
+							"U_Phase": "Package",
+							"U_Bottoms": sObj.U_Bottoms,
+							"U_Bugs": sObj.U_Bugs,
+							"U_Burned": sObj.U_Burned,
+							"U_CD": sObj.U_CD,
+							"U_Cart": sObj.U_Cart,
+							"U_Glass": sObj.U_Glass,
+							// "U_MetrcLicense": sObj.U_MetrcLicense,
+							// "U_MetrcLocation": sObj.U_MetrcLocation,
+							"U_PM": sObj.U_PM,
+							"U_Price": sObj.U_Price,
+							"U_SalesRep": sObj.U_SalesRep,
+							"U_SeedBana": sObj.U_SeedBana,
+							"U_Yellowhead": sObj.U_Yellowhead,
+							"U_SalesNote": sObj.U_SalesNote
+						}],
+						"DocumentLinesBinAllocations": [{
+							"BinAbsEntry": Number(locationID.split("-")[1]),
+							"Quantity": quantity,
+							"SerialAndBatchNumbersBaseLine": 0
+						}]
+					});
+
+					batchUrl.push({
+						url: "/b1s/v2/InventoryGenEntries",
+						data: payLoadInventoryEntry,
+						method: "POST"
+					});
+
+					payLoadInventoryExit = {
+						"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
+						"Comments": "Manage Inventory - New Packages",
+						"DocumentLines": []
+					};
+					payLoadInventoryExit.DocumentLines.push({
+						//"ItemCode": sObj.NPDNMCode,
+						// "ItemCode": sObj.ItemCode, //changed by susmita
+						// "ItmGrpCode": 100,
+						"BaseType": 202,
+						"BaseEntry": docNUM,
+						"BaseLine": 0,
+						"WarehouseCode": sObj.WhsCode,
+						"Quantity": quantity,
+						"BatchNumbers": [{
+							"BatchNumber": sObj.METRCUID, // <THIS IS TAG>
+							"Quantity": quantity, //<THIS IS THE QTY OF CLONES>
+							"Location": sObj.BinLocationCode //<THIS IS FROM CLONE ROOM>
+						}],
+						"DocumentLinesBinAllocations": [{
+							"BinAbsEntry": Number(AbslocationEntry),
+							"Quantity": quantity,
+							"SerialAndBatchNumbersBaseLine": 0
+						}]
+					});
+
+					batchUrl.push({
+						url: "/b1s/v2/InventoryGenExits",
+						data: payLoadInventoryExit,
+						method: "POST"
+					});
+
+					var secondPatchCall = {
+						"ProductionOrderStatus": "boposClosed",
+					};
+
+					batchUrl.push({
+						url: "/b1s/v2/ProductionOrders(" + Number(docNUM) + ")",
+						data: secondPatchCall,
+						method: "PATCH"
+					});
+
+					if (batchUrl.length > 0) {
+						that.createBatchCall(batchUrl, function () {
+							count--;
+							if (count == 0) {
+								that.createPackage.setBusy(false);
+								that.createPackage.close();
+								sap.m.MessageToast.show("Package created successfully");
+								that.byId("inTakeTable").clearSelection();
+								that.loadMasterData();
+							}
+						});
+					}
+
+				}.bind(that), payLoadProduction, "POST");
+
 			});
 
 			//update remaining quantity to manage package table after creating package
@@ -3361,7 +3468,6 @@ sap.ui.define([
 					// } else {
 					// 	itemCodeList = jsonModel.getProperty("/itemCodeList");
 					// }
-				
 
 					// var rObj = $.grep(itemCodeList, function (item) {
 					// 	if (item.ItemName !== "" && item.ItemName.search(sObj.StrainName) !== -1) {
@@ -3371,14 +3477,14 @@ sap.ui.define([
 					// if (rObj.length > 0) {
 					// 	sObj.itemList = rObj;
 					// }
-					
+
 					// var rObj = $.grep(itemCodeList, function (item) {
 					// 	if (item.ItemName !== "" && item.ItemName.search(sObj.ItemName) !== -1) {
 					// 		return item;
 					// 	}
 					// });
 					// if (rObj.length > 0) {
-					
+
 					// 	var rObj2 = $.grep(itemCodeList, function (item) {
 					// 		if (rObj[0].ItemsGroupCode == item.ItemsGroupCode) {
 					// 			arr.push(item);
@@ -3402,14 +3508,14 @@ sap.ui.define([
 
 					sArrayObj.push(sObj);
 				});
-				
-					$.each(itemGrpCodesIntake, function(i,m){
-						var rObj2 = $.grep(itemCodeList, function (item) {
-							if (m.key == item.ItemsGroupCode) {
-								arr.push(item);
-							}
-						});
+
+				$.each(itemGrpCodesIntake, function (i, m) {
+					var rObj2 = $.grep(itemCodeList, function (item) {
+						if (m.key == item.ItemsGroupCode) {
+							arr.push(item);
+						}
 					});
+				});
 				jsonModel.setProperty("/combinePackagesItems", arr);
 				jsonModel.setProperty("/totalQtyCombinepack", countQty);
 			}
