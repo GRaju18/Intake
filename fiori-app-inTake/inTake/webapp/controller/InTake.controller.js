@@ -2743,6 +2743,7 @@ sap.ui.define([
 
 				var payLoadProduction = {
 					"ItemNo": sObj.newItemCode, //newItemcode
+					"DistributionRule":"PROC",
 					"PlannedQuantity": sObj.Quantity, //updateObject.Quantity,
 					"ProductionOrderType": "bopotSpecial",
 					"PostingDate": cDate,
@@ -2751,6 +2752,7 @@ sap.ui.define([
 					"Remarks": "Manage Inventory - Change Item",
 					"ProductionOrderLines": [{
 							"ItemNo": sObj.ItemCode, // row item
+							"DistributionRule":"PROC",
 							"PlannedQuantity": sObj.Quantity,
 							"ProductionOrderIssueType": "im_Manual",
 							"Warehouse": sObj.WhsCode
@@ -3262,6 +3264,7 @@ sap.ui.define([
 
 				var payLoadProduction = {
 					"ItemNo": sObj.NPDNMCode,
+					"DistributionRule":"PROC",
 					"PlannedQuantity": quantity, //sObj.Quantity, //updateObject.Quantity,
 					"ProductionOrderType": "bopotSpecial",
 					"PostingDate": cDate,
@@ -3270,6 +3273,7 @@ sap.ui.define([
 					"Remarks": "Manage Inventory - New Package",
 					"ProductionOrderLines": [{
 							"ItemNo": sObj.ItemCode, // selected item
+							"DistributionRule":"PROC",
 							"PlannedQuantity": quantity, // sObj.Quantity,
 							"ProductionOrderIssueType": "im_Manual",
 							"Warehouse": sObj.WhsCode,
@@ -3631,6 +3635,7 @@ sap.ui.define([
 
 			var payLoadProduction = {
 				"ItemNo": SelectedItem.split("@")[0],
+				"DistributionRule":"PROC",
 				"PlannedQuantity": totalQtyCombinepack, //updateObject.Quantity,
 				"ProductionOrderType": "bopotSpecial",
 				"PostingDate": cDate,
@@ -3650,6 +3655,7 @@ sap.ui.define([
 
 				var insideObj = {
 					"ItemNo": rObj[0].ItemCode,
+					"DistributionRule":"PROC",
 					"PlannedQuantity": obj.Quantity,
 					"ProductionOrderIssueType": "im_Manual",
 					"Warehouse": obj.WhsCode,
@@ -4433,6 +4439,7 @@ sap.ui.define([
 				var adjustedQty = Number(sObj.AQTY);
 				payLoadInventoryExit.DocumentLines.push({
 					"ItemCode": sObj.ItemCode,
+					"CostingCode": "PROC",
 					"ItmGrpCode": 100,
 					"WarehouseCode": sObj.WhsCode,
 					"Quantity": Math.abs(adjustedQty),
@@ -4455,6 +4462,7 @@ sap.ui.define([
 				};
 				payLoadInventoryEntry.DocumentLines.push({
 					"ItemCode": sObj.ItemCode,
+					"CostingCode": "PROC",
 					"ItmGrpCode": 100,
 					"WarehouseCode": sObj.WhsCode,
 					"Quantity": adjustedQty,
