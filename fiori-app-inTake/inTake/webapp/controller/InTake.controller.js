@@ -2748,7 +2748,7 @@ sap.ui.define([
 					"PostingDate": cDate,
 					"DueDate": cDate,
 					"Warehouse": sObj.WhsCode,
-					"Remarks": "Manage packages - Change Item",
+					"Remarks": "Manage Inventory - Change Item",
 					"ProductionOrderLines": [{
 							"ItemNo": sObj.ItemCode, // row item
 							"PlannedQuantity": sObj.Quantity,
@@ -2774,7 +2774,7 @@ sap.ui.define([
 						var payLoadInventoryEntry = {
 							"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
 							// "PaymentGroupCode": 2,
-							"Comments": "Manage Packages - Change Item",
+							"Comments": "Manage Inventory - Change Item",
 							"DocumentLines": []
 						};
 						payLoadInventoryEntry.DocumentLines.push({
@@ -2805,7 +2805,7 @@ sap.ui.define([
 						var payLoadInventoryExit = {
 							"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
 							// "PaymentGroupCode": 2,
-							"Comments": "Manage Packages - Change Item",
+							"Comments": "Manage Inventory - Change Item",
 							"DocumentLines": []
 						};
 						payLoadInventoryExit.DocumentLines.push({
