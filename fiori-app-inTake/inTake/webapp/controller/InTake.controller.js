@@ -2992,7 +2992,7 @@ sap.ui.define([
 					// }
 
 					var rObj = $.grep(itemCodeList, function (item) {
-						if (item.ItemName !== "" && item.ItemName.search(sObj.ItemName) !== -1) {
+						if (item.ItemName && item.ItemName !== "" && item.ItemName.search(sObj.ItemName) !== -1) {
 							return item;
 						}
 					});
@@ -3884,7 +3884,7 @@ sap.ui.define([
 					sObj.NSRTD = "";
 					sObj.SNO = "#" + (i + 1);
 					$.grep(itemCodeList, function (item) {
-						if (item.ItemName !== "" && item.ItemName.search(sObj.U_NSTNM) !== -1) {
+						if (item.ItemName && item.ItemName !== "" && item.ItemName.search(sObj.U_NSTNM) !== -1) {
 							sObj.NPDNMText = item.ItemName;
 							sObj.NPDNMCode = item.ItemCode;
 						}
