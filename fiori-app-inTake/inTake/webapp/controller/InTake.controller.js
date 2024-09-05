@@ -653,16 +653,19 @@ sap.ui.define([
 					invTransferPostData.push(payLoadInventory);
 					locationChangeData.push(updateObject);
 					if (metrcData && metrcData.U_NACST === "X") {
-						metrcObj = {
-							Label: updateObject.METRCUID,
-							Location: updateObject.U_MetrcLocation,
-							MoveDate: that.getSystemDate()
-						};
-						metricPayload.push(metrcObj);
+						if (updateObject.U_MetrcLocation !== null && updateObject.U_MetrcLocation !== "null") {
+							metrcObj = {
+								Label: updateObject.METRCUID,
+								Location: updateObject.U_MetrcLocation,
+								MoveDate: that.getSystemDate()
+							};
+								metricPayload.push(metrcObj);
+						}
+					
 					}
 				});
 				var that = this;
-				if (metrcData && metrcData.U_NACST === "X") {
+				if (metrcData && metrcData.U_NACST === "X" && metricPayload.length > 0) {
 					that.changeLocationDialog.setBusy(true);
 					var metrcUrl = "/packages/v2/location?licenseNumber=" + jsonModel.getProperty("/selectedLicense");
 					that.callMetricsService(metrcUrl, "PUT", metricPayload, function () {
@@ -2743,7 +2746,7 @@ sap.ui.define([
 
 				var payLoadProduction = {
 					"ItemNo": sObj.newItemCode, //newItemcode
-					"DistributionRule":"PROC",
+					"DistributionRule": "PROC",
 					"PlannedQuantity": sObj.Quantity, //updateObject.Quantity,
 					"ProductionOrderType": "bopotSpecial",
 					"PostingDate": cDate,
@@ -2752,7 +2755,7 @@ sap.ui.define([
 					"Remarks": "Manage Inventory - Change Item",
 					"ProductionOrderLines": [{
 							"ItemNo": sObj.ItemCode, // row item
-							"DistributionRule":"PROC",
+							"DistributionRule": "PROC",
 							"PlannedQuantity": sObj.Quantity,
 							"ProductionOrderIssueType": "im_Manual",
 							"Warehouse": sObj.WhsCode
@@ -3264,7 +3267,7 @@ sap.ui.define([
 
 				var payLoadProduction = {
 					"ItemNo": sObj.NPDNMCode,
-					"DistributionRule":"PROC",
+					"DistributionRule": "PROC",
 					"PlannedQuantity": quantity, //sObj.Quantity, //updateObject.Quantity,
 					"ProductionOrderType": "bopotSpecial",
 					"PostingDate": cDate,
@@ -3273,7 +3276,7 @@ sap.ui.define([
 					"Remarks": "Manage Inventory - New Package",
 					"ProductionOrderLines": [{
 							"ItemNo": sObj.ItemCode, // selected item
-							"DistributionRule":"PROC",
+							"DistributionRule": "PROC",
 							"PlannedQuantity": quantity, // sObj.Quantity,
 							"ProductionOrderIssueType": "im_Manual",
 							"Warehouse": sObj.WhsCode,
@@ -3635,7 +3638,7 @@ sap.ui.define([
 
 			var payLoadProduction = {
 				"ItemNo": SelectedItem.split("@")[0],
-				"DistributionRule":"PROC",
+				"DistributionRule": "PROC",
 				"PlannedQuantity": totalQtyCombinepack, //updateObject.Quantity,
 				"ProductionOrderType": "bopotSpecial",
 				"PostingDate": cDate,
@@ -3655,7 +3658,7 @@ sap.ui.define([
 
 				var insideObj = {
 					"ItemNo": rObj[0].ItemCode,
-					"DistributionRule":"PROC",
+					"DistributionRule": "PROC",
 					"PlannedQuantity": obj.Quantity,
 					"ProductionOrderIssueType": "im_Manual",
 					"Warehouse": obj.WhsCode,
