@@ -8,12 +8,14 @@
 					<f:content>
 						<core:Title text=""/>
 						<Label text="Select Item" required="false"/>
-						<ComboBox id="combinePacknewItem" selectedKey="{jsonModel>/transLincense}" 
+						<!--	<ComboBox id="combinePacknewItem" selectedKey="{jsonModel>/transLincense}" 
 							items="{path: 'jsonModel>/combinePackagesItems'}">
-							<!--<core:Item key="{jsonModel>CardCode}${jsonModel>CardForeignName}" text="{jsonModel>CardName} - {jsonModel>CardForeignName}"/>-->
 							<core:Item key="{jsonModel>ItemCode}@{jsonModel>ItemName}" text="{jsonModel>ItemName}" />
-						</ComboBox>
-						
+						</ComboBox>-->
+						<SearchField id="combinePacknewItem" enableSuggestions="true" suggestionItems="{jsonModel>/combinePackagesItems}"
+							suggest="onSuggestCombineItem" search="onCombineItemSelected" showSearchButton="false">
+							<SuggestionItem text="{jsonModel>ItemName}"/>
+						</SearchField>
 						<Label text="New Package" required="false"/>
 						<!--<ComboBox id="locationForTras" selectedKey="{jsonModel>/transLoc}"  items="{path: 'jsonModel>/binlocationData'}">-->
 						<!--	<core:Item key="{jsonModel>BinCode}" text="{jsonModel>Sublevel2}"/>-->
@@ -22,18 +24,15 @@
 							<core:Item key="{jsonModel>Label}" text="{jsonModel>Label}"/>
 						</Select>
 						<core:Title text=""/>
-						
 						<Label text="Total Quantity" required="false"/>
 						<Text text="{jsonModel>/totalQtyCombinepack}"/>
-						
-						
-					
 						<!--<core:Title text=""/>-->
 					</f:content>
 				</f:SimpleForm>
 			</VBox>
 			<VBox class="sapUiTinyMargin">
-				<Table id="CombinePackRowTable" inset="false" mode="None" items="{jsonModel>/combinePackagesRow}" width="100%" busy="{jsonModel>/combinetableBusy}">
+				<Table id="CombinePackRowTable" inset="false" mode="None" items="{jsonModel>/combinePackagesRow}" width="100%"
+					busy="{jsonModel>/combinetableBusy}">
 					<columns>
 						<Column width="20%">
 							<Label text="METRC UID" design="Bold"/>

@@ -659,9 +659,9 @@ sap.ui.define([
 								Location: updateObject.U_MetrcLocation,
 								MoveDate: that.getSystemDate()
 							};
-								metricPayload.push(metrcObj);
+							metricPayload.push(metrcObj);
 						}
-					
+
 					}
 				});
 				var that = this;
@@ -1692,6 +1692,35 @@ sap.ui.define([
 			});
 			var newdateT = dateFormat.format(datatest);
 			sap.ui.core.Fragment.byId("InventoryTransferDialog", "EstArrival").setValue(newdateT);
+		},
+
+		onCombineItemSelected: function (evt) {
+			var oItem = evt.getParameter("suggestionItem");
+			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
+			if (oItem) {
+				var sObj = oItem.getBindingContext("jsonModel").getObject();
+				jsonModel.setProperty("/combineObj", sObj);
+			} else if (evt.getParameter("clearButtonPressed")) {
+				evt.getSource().fireSuggest();
+
+			}
+		},
+		onSuggestCombineItem: function (event) {
+			this.oSFC = event.getSource();
+			var sValue = event.getParameter("suggestValue"),
+				aFilters = [];
+			if (sValue) {
+				aFilters = [
+					new Filter([
+						new Filter("ItemName", function (sDes) {
+							return (sDes || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
+						})
+					], false)
+				];
+			}
+
+			this.oSFC.getBinding("suggestionItems").filter(aFilters);
+			this.oSFC.suggest();
 		},
 
 		//transfer template end
@@ -3527,7 +3556,7 @@ sap.ui.define([
 				jsonModel.setProperty("/totalQtyCombinepack", countQty);
 			}
 			jsonModel.setProperty("/combinePackagesRow", sArrayObj);
-			sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").setSelectedKey("");
+			sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").setValue("");
 			sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").setSelectedKey("");
 
 			jsonModel.setProperty("/temChangeLoc", "");
@@ -3549,10 +3578,11 @@ sap.ui.define([
 			// validation
 			var selectedPackages = [];
 			var isValidated = true;
-			var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
+		//	var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
 			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getSelectedKey();
+			var combineObj = jsonModel.getProperty("/combineObj");
 
-			if (SelectedItem == "") {
+			if (combineObj.ItemCode == "") {
 				sap.m.MessageToast.show("Please select Item");
 				isValidated = false;
 			}
@@ -3569,7 +3599,7 @@ sap.ui.define([
 				var metricobj = {
 					Tag: newMetrcTag,
 					Location: ChangeLocationList[0].U_MetrcLocation, //sObj.U_MetrcLocation,
-					Item: SelectedItem.split("@")[1], //sObj.ItemName,
+					Item: combineObj.ItemName, //sObj.ItemName,
 					Quantity: Number(totalQtyCombinepack),
 					UnitOfMeasure: "Pounds",
 					// PatientLicenseNumber: null,
@@ -3632,12 +3662,13 @@ sap.ui.define([
 			// validation
 			var selectedPackages = [];
 			var isValidated = true;
-			var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
+			//var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
+			var combineObj = jsonModel.getProperty("/combineObj");
 			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getSelectedKey();
 			var that = this;
 
 			var payLoadProduction = {
-				"ItemNo": SelectedItem.split("@")[0],
+				"ItemNo": combineObj.ItemCode,
 				"DistributionRule": "PROC",
 				"PlannedQuantity": totalQtyCombinepack, //updateObject.Quantity,
 				"ProductionOrderType": "bopotSpecial",
