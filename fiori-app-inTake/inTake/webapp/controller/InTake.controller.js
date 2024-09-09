@@ -3785,8 +3785,8 @@ sap.ui.define([
 							//<THIS IS FROM CLONE ROOM>
 							"U_Phase": "Package",
 							"U_IsPackage": "YES",
-							"ManufacturerSerialNumber": combinePackagesRowData[0].HarvestName, //harvestTag
-							"U_BatAttr3": sourceEntry //combinePackagesRowData[0].METRCUID, //sourceTag
+							"ManufacturerSerialNumber": "multi-harvest", //combinePackagesRowData[0].HarvestName, //harvestTag
+							"U_BatAttr3": "multi-package" //sourceEntry //combinePackagesRowData[0].METRCUID, //sourceTag
 						}],
 						"DocumentLinesBinAllocations": [{
 							"BinAbsEntry": Number(absEntry),
