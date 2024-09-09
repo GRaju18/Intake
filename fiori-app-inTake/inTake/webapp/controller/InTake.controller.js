@@ -1312,7 +1312,7 @@ sap.ui.define([
 				}
 			});
 			var rItem = $.grep(canitemsList, function (cItem) {
-				if (cItem.ItemCode === sObj.ItemCode) {
+				if (cItem.ItemCode && cItem.ItemCode === sObj.ItemCode) {
 					return cItem;
 				}
 			});
@@ -2000,7 +2000,7 @@ sap.ui.define([
 
 					var ProdStdCost;
 					$.each(allItemsList, function (j, k) {
-						if (sObj.ItemCode == k.ItemCode) {
+						if (k.ItemCode && sObj.ItemCode == k.ItemCode) {
 							ProdStdCost = k.ProdStdCost;
 						}
 
@@ -2507,7 +2507,7 @@ sap.ui.define([
 
 			$.each(ItemsCallDATA, function (i, obj) {
 				if (obj.ItemName !== null) {
-					if (obj.ItemName.toLowerCase().includes(sTerm.toLowerCase()) == true || obj.ItemCode.includes(sTerm) == true) {
+					if (obj.ItemName && obj.ItemCode && obj.ItemName.toLowerCase().includes(sTerm.toLowerCase()) == true || obj.ItemCode.includes(sTerm) == true) {
 						arrITEMS.push(obj);
 					}
 				}
@@ -2613,7 +2613,7 @@ sap.ui.define([
 
 				if (sObj.newItemName != "") {
 					var rObj = $.grep(ItemsCallDATA, function (nItem) {
-						if (nItem.ItemName === sObj.newItemName) {
+						if (nItem.ItemName && nItem.ItemName === sObj.newItemName) {
 							return nItem;
 						}
 					});
@@ -2655,7 +2655,7 @@ sap.ui.define([
 							$.each(changeItemsData, function (i, sObj) {
 								if (sObj.newItemCode === "") {
 									var rObj = $.grep(data1.value, function (nItem) {
-										if (nItem.ItemName === sObj.newItemName) {
+										if (nItem.ItemName && nItem.ItemName === sObj.newItemName) {
 											return nItem;
 										}
 									});
@@ -2761,13 +2761,13 @@ sap.ui.define([
 				});
 
 				$.each(ItemsCallDATA, function (i, obj) {
-					if (sObj.newItemCode == obj.ItemCode) {
+					if (obj.ItemCode && sObj.newItemCode == obj.ItemCode) {
 						ProdStdCost = obj.ProdStdCost;
 					}
 				});
 
 				$.each(ItemsCallDATA, function (i, obj) {
-					if (sObj.ItemCode == obj.ItemCode) {
+					if (obj.ItemCode && sObj.ItemCode == obj.ItemCode) {
 						exitProdStdCost = obj.ProdStdCost;
 					}
 				});
@@ -2878,7 +2878,7 @@ sap.ui.define([
 									this.readServiecLayer("/b1s/v2/sml.svc/CV_GH_BATCHQUERY_VW" + filters, function (data) {
 
 										var returnObj = $.grep(data.value, function (sItem) {
-											if (sObj.newItemCode === sItem.ItemCode) {
+											if (sItem.ItemCode && sObj.newItemCode === sItem.ItemCode) {
 												return sItem;
 											}
 										});
@@ -3031,7 +3031,7 @@ sap.ui.define([
 					if (rObj.length > 0) {
 						var arr = [];
 						var rObj2 = $.grep(itemCodeList, function (item) {
-							if (rObj[0].ItemsGroupCode == item.ItemsGroupCode) {
+							if (item.ItemsGroupCode && rObj[0].ItemsGroupCode == item.ItemsGroupCode) {
 								arr.push(item);
 							}
 						});
@@ -3057,7 +3057,7 @@ sap.ui.define([
 			jsonModel.setProperty("/createPackageData", sArrayObj);
 			jsonModel.setProperty("/temChangeLoc", "");
 			this.createPackage.open();
-			this.loadTagsDataInPkg();
+			// this.loadTagsDataInPkg();
 			this.loadLocationsDataInPkg();
 		},
 		productListItemGPhase: function (sId, oContext) {
@@ -3105,22 +3105,31 @@ sap.ui.define([
 						valueStateText: "{jsonModel>QTYTXT}",
 						width: "100%"
 					}),
-					new sap.m.Select({
-						forceSelection: false,
-						width: "100%",
-						selectedKey: "{jsonModel>NTRID}",
-						forceSelection: false,
+					
+					new sap.m.Input({
+						value: "{jsonModel>NTRID}",
 						valueState: "{jsonModel>STATUSTAG}",
 						valueStateText: "{jsonModel>TAGTXT}",
-						change: [this.tagSelectionChange, this],
-						items: {
-							path: 'jsonModel>/harvestTagsData',
-							template: new sap.ui.core.Item({
-								key: "{jsonModel>Label}",
-								text: "{jsonModel>Label}"
-							})
-						}
+						placeholder: "Scan package tag"
 					}),
+					
+					// new sap.m.Select({
+					// 	forceSelection: false,
+					// 	width: "100%",
+					// 	selectedKey: "{jsonModel>NTRID}",
+					// 	forceSelection: false,
+					// 	valueState: "{jsonModel>STATUSTAG}",
+					// 	valueStateText: "{jsonModel>TAGTXT}",
+					// 	change: [this.tagSelectionChange, this],
+					// 	items: {
+					// 		path: 'jsonModel>/harvestTagsData',
+					// 		template: new sap.ui.core.Item({
+					// 			key: "{jsonModel>Label}",
+					// 			text: "{jsonModel>Label}"
+					// 		})
+					// 	}
+					// }),
+					
 					new sap.m.Select({
 						forceSelection: false,
 						width: "100%",
@@ -3218,7 +3227,7 @@ sap.ui.define([
 				$.each(createPackageData, function (i, sObj) {
 					var locationID = sObj.NSTLN;
 					var rObj = $.grep(ChangeLocationList, function (sLoc) {
-						if (sLoc.BinCode === locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split("-")[1], "")
+						if (sLoc.BinCode && sLoc.BinCode === locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split("-")[1], "")
 							.replace("-", "")) {
 							return sLoc;
 						}
@@ -3289,7 +3298,7 @@ sap.ui.define([
 				var quantity = Number(sObj.NQNTY).toFixed(2);
 
 				$.each(ChangeLocationList, function (i, obj) {
-					if (sObj.BinLocationCode.toLowerCase() == obj.BinCode.toLowerCase()) {
+					if (obj.BinCode && sObj.BinLocationCode.toLowerCase() == obj.BinCode.toLowerCase()) {
 						AbslocationEntry = obj.AbsEntry;
 					}
 				});
@@ -3547,7 +3556,7 @@ sap.ui.define([
 
 				$.each(itemGrpCodesIntake, function (i, m) {
 					var rObj2 = $.grep(itemCodeList, function (item) {
-						if (m.key == item.ItemsGroupCode) {
+						if (item.ItemsGroupCode && m.key == item.ItemsGroupCode) {
 							arr.push(item);
 						}
 					});
@@ -3557,11 +3566,11 @@ sap.ui.define([
 			}
 			jsonModel.setProperty("/combinePackagesRow", sArrayObj);
 			sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").setValue("");
-			sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").setSelectedKey("");
+			sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").setValue("");
 
 			jsonModel.setProperty("/temChangeLoc", "");
 			this.CombinePackages.open();
-			this.loadTagsDataInPkg();
+			// this.loadTagsDataInPkg();
 			this.loadLocationsDataInPkg();
 		},
 
@@ -3579,7 +3588,7 @@ sap.ui.define([
 			var selectedPackages = [];
 			var isValidated = true;
 		//	var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
-			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getSelectedKey();
+			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getValue();
 			var combineObj = jsonModel.getProperty("/combineObj");
 
 			if (combineObj.ItemCode == "") {
@@ -3664,7 +3673,7 @@ sap.ui.define([
 			var isValidated = true;
 			//var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
 			var combineObj = jsonModel.getProperty("/combineObj");
-			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getSelectedKey();
+			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getValue();
 			var that = this;
 
 			var payLoadProduction = {
@@ -4348,7 +4357,7 @@ sap.ui.define([
 					updateObject.SNO = "#" + (i + 1);
 
 					var dryCanGrpItem = $.grep(allItemsList, function (e) {
-						if (updateObject.ItemName == e.ItemName) {
+						if (e.ItemName && updateObject.ItemName == e.ItemName) {
 							return e;
 						}
 					});
@@ -4447,7 +4456,7 @@ sap.ui.define([
 				var cloneItemCodeList = jsonModel.getProperty("/cloneItemCodeList");
 				var allItemsList = jsonModel.getProperty("/allItemsList");
 				$.each(allItemsList, function (i, obj) {
-					if (sObj.ItemCode == obj.ItemCode) {
+					if (obj.ItemCode && sObj.ItemCode == obj.ItemCode) {
 						ProdStdCost = obj.ProdStdCost;
 					}
 				});

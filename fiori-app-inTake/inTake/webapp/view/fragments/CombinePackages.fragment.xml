@@ -17,12 +17,14 @@
 							<SuggestionItem text="{jsonModel>ItemName}"/>
 						</SearchField>
 						<Label text="New Package" required="false"/>
+						<Input id="combineNewTag" placeholder="Scan package tag"/>
 						<!--<ComboBox id="locationForTras" selectedKey="{jsonModel>/transLoc}"  items="{path: 'jsonModel>/binlocationData'}">-->
 						<!--	<core:Item key="{jsonModel>BinCode}" text="{jsonModel>Sublevel2}"/>-->
 						<!--</ComboBox>-->
-						<Select id="combineNewTag" forceSelection="false" items="{path: 'jsonModel>/harvestTagsData'}">
-							<core:Item key="{jsonModel>Label}" text="{jsonModel>Label}"/>
-						</Select>
+						
+						<!--<Select id="combineNewTag" forceSelection="false" items="{path: 'jsonModel>/harvestTagsData'}">-->
+						<!--	<core:Item key="{jsonModel>Label}" text="{jsonModel>Label}"/>-->
+						<!--</Select>-->
 						<core:Title text=""/>
 						<Label text="Total Quantity" required="false"/>
 						<Text text="{jsonModel>/totalQtyCombinepack}"/>
