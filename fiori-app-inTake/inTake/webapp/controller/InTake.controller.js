@@ -3429,8 +3429,9 @@ sap.ui.define([
 					});
 
 					if (batchUrl.length > 0) {
+						count--;
 						that.createBatchCall(batchUrl, function () {
-							count--;
+						
 							if (count == 0) {
 								that.createPackage.setBusy(false);
 								that.createPackage.close();
