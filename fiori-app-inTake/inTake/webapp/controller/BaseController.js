@@ -86,7 +86,7 @@ sap.ui.define([
 			} else {
 				systemDate = jsonModel.getProperty("/systemDate");
 			}
-			systemDate = dateFormat.format(new Date(systemDate));
+			systemDate = dateFormat.format(new Date());
 			return systemDate;
 		},
 

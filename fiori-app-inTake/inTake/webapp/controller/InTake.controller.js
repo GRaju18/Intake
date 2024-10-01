@@ -2632,7 +2632,7 @@ sap.ui.define([
 				sap.m.MessageToast.show("Some of the items are invalid");
 				return;
 			}
-			var cDate = that.getSystemDate(new Date());
+			var cDate = that.getSystemDate();
 			// validation
 			var metricPayload = [];
 			var noItemCodes = [],
@@ -2747,7 +2747,7 @@ sap.ui.define([
 		changeItemInterncallPostings: function (changeItemsData, jsonModel, changeItemDialog) {
 			var ChangeLocationList = jsonModel.getProperty("/ChangeLocationList");
 			var ItemsCallDATA = jsonModel.getProperty("/ItemsDATA");
-			var cDate = this.getSystemDate(new Date());
+			var cDate = this.getSystemDate();
 			var jsonModel = this.getOwnerComponent().getModel("jsonModel");
 			var that = this;
 			var count = changeItemsData.length;
