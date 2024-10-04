@@ -4221,7 +4221,7 @@ sap.ui.define([
 					updateArray.push(updateObject);
 					metrcPayLoadObj = {
 						Label: updateObject.METRCUID,
-						ActualDate: updateObject.CreateDate
+						ActualDate: that.getSystemDate() //updateObject.CreateDate
 					};
 					metricPayload.push(metrcPayLoadObj);
 				}
