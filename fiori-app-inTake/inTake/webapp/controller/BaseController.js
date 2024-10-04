@@ -904,8 +904,8 @@ sap.ui.define([
 					//	callBack.call(that, res, errorMessage);
 					if (errorMessage) {
 						var errorTxt = jsonModel.getProperty("/errorTxt");
-						errorTxt.push(errorMessage);
-						jsonModel.setProperty("/errorTxt", errorTxt);
+						// errorTxt.push(errorMessage);
+						jsonModel.setProperty("/errorTxt", errorMessage);
 					}
 					if (count === 0) {
 						callBack.call(that, errorMessage);
