@@ -2158,7 +2158,7 @@ sap.ui.define([
 			this.readServiecLayer("/b1s/v2/SalesPersons", function (data1) {
 				jsonModel.setProperty("/salesPersonDATA", data1.value);
 				jsonModel.setProperty("/onBusyBatchChange", false);
-				if (batchDetailsObj.IntrSerial != null) {
+				if (batchDetailsObj.IntrSerial != null && batchDetailsObj.IntrSerial.includes("-") == true) {
 					var rObj = $.grep(data1.value, function (nItem) {
 						if (nItem.SalesEmployeeName === batchDetailsObj.IntrSerial.split("-")[0].trimEnd()) {
 							return nItem;
@@ -2168,8 +2168,9 @@ sap.ui.define([
 						sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue(rObj[0].SalesEmployeeName);
 					} else {
 						sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue(batchDetailsObj.IntrSerial.split("-")[0].trimEnd());
-
 					}
+				} else {
+					sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue("");
 				}
 
 			});
@@ -2259,8 +2260,12 @@ sap.ui.define([
 				batchComboBoxnewName = jsonModel.getProperty("/batchComboBoxnewName")
 			}
 
-			if (oBatchDetails.IntrSerial != null) {
+			if (oBatchDetails.IntrSerial != null && oBatchDetails.IntrSerial.includes("-") == true) {
 				IntrSerialoldPrice = oBatchDetails.IntrSerial.split("-")[1].replace(" $", "");
+			} else {
+				if(oBatchDetails.IntrSerial != null && oBatchDetails.IntrSerial.includes("$") == true){
+					IntrSerialoldPrice = oBatchDetails.IntrSerial.replace("$", "");
+				}
 			}
 
 			if (pricenewValue == "") {
@@ -2339,11 +2344,15 @@ sap.ui.define([
 					ItemName: updateObject.ItemName
 				};
 				sap.ui.core.Fragment.byId("batchDetailsDialog", "sRepo").setValue("");
-				if (updateObject.IntrSerial != null || updateObject.IntrSerial != undefined) {
+				if ((updateObject.IntrSerial != null || updateObject.IntrSerial != undefined ) && updateObject.IntrSerial.includes("-") == true) {
 					batchDetailsObj.IntrSerialPrice = updateObject.IntrSerial.split("-")[1].replace(" $", "");
 					// this.salesPersonCall(updateObject.IntrSerial.split("-")[0].trimEnd());
 				} else {
-					batchDetailsObj.IntrSerialPrice = "";
+					if(updateObject.IntrSerial != null && updateObject.IntrSerial.includes("$") == true){
+						batchDetailsObj.IntrSerialPrice = updateObject.IntrSerial.replace("$", "");
+					} else {
+						batchDetailsObj.IntrSerialPrice = "";
+					}
 					// jsonModel.setProperty("/salesPersonDATA", "");
 					// sap.m.MessageToast.show("No sales person found");
 				}
@@ -2507,7 +2516,8 @@ sap.ui.define([
 
 			$.each(ItemsCallDATA, function (i, obj) {
 				if (obj.ItemName !== null) {
-					if (obj.ItemName && obj.ItemCode && obj.ItemName.toLowerCase().includes(sTerm.toLowerCase()) == true || obj.ItemCode.includes(sTerm) == true) {
+					if (obj.ItemName && obj.ItemCode && obj.ItemName.toLowerCase().includes(sTerm.toLowerCase()) == true || obj.ItemCode.includes(
+							sTerm) == true) {
 						arrITEMS.push(obj);
 					}
 				}
@@ -3105,14 +3115,14 @@ sap.ui.define([
 						valueStateText: "{jsonModel>QTYTXT}",
 						width: "100%"
 					}),
-					
+
 					new sap.m.Input({
 						value: "{jsonModel>NTRID}",
 						valueState: "{jsonModel>STATUSTAG}",
 						valueStateText: "{jsonModel>TAGTXT}",
 						placeholder: "Scan package tag"
 					}),
-					
+
 					// new sap.m.Select({
 					// 	forceSelection: false,
 					// 	width: "100%",
@@ -3129,7 +3139,7 @@ sap.ui.define([
 					// 		})
 					// 	}
 					// }),
-					
+
 					new sap.m.Select({
 						forceSelection: false,
 						width: "100%",
@@ -3227,7 +3237,8 @@ sap.ui.define([
 				$.each(createPackageData, function (i, sObj) {
 					var locationID = sObj.NSTLN;
 					var rObj = $.grep(ChangeLocationList, function (sLoc) {
-						if (sLoc.BinCode && sLoc.BinCode === locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split("-")[1], "")
+						if (sLoc.BinCode && sLoc.BinCode === locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split(
+								"-")[1], "")
 							.replace("-", "")) {
 							return sLoc;
 						}
@@ -3431,7 +3442,7 @@ sap.ui.define([
 					if (batchUrl.length > 0) {
 						count--;
 						that.createBatchCall(batchUrl, function () {
-						
+
 							if (count == 0) {
 								that.createPackage.setBusy(false);
 								that.createPackage.close();
@@ -3588,7 +3599,7 @@ sap.ui.define([
 			// validation
 			var selectedPackages = [];
 			var isValidated = true;
-		//	var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
+			//	var SelectedItem = sap.ui.core.Fragment.byId("CombinePackages", "combinePacknewItem").getSelectedKey();
 			var newMetrcTag = sap.ui.core.Fragment.byId("CombinePackages", "combineNewTag").getValue();
 			var combineObj = jsonModel.getProperty("/combineObj");
 
