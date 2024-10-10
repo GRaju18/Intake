@@ -2807,7 +2807,7 @@ sap.ui.define([
 					]
 				};
 
-				that.updateServiceLayerBatch("/b1s/v2/ProductionOrders", function (res) {
+				that.updateServiecLayer("/b1s/v2/ProductionOrders", function (res) {
 					var docNUM = Number(res.AbsoluteEntry);
 
 					var fisrtPatchCall = {
@@ -2817,7 +2817,7 @@ sap.ui.define([
 						"ProductionOrderStatus": "boposClosed",
 					};
 
-					that.updateServiceLayerBatch("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
+					that.updateServiecLayer("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
 
 						var payLoadInventoryEntry = {
 							"BPL_IDAssignedToInvoice": jsonModel.getProperty("/sLinObj").U_Branch,
@@ -2843,9 +2843,25 @@ sap.ui.define([
 								"U_BatAttr3": sObj.SourceUID,
 								"U_IsPackage": "YES",
 								"U_Phase": "Package",
+								"U_Bottoms": sObj.U_Bottoms,
+								"U_Bugs": sObj.U_Bugs,
+								"U_Burned": sObj.U_Burned,
+								"U_CD": sObj.U_CD,
+								"U_Cart": sObj.U_Cart,
+								"U_Glass": sObj.U_Glass,
+								// "U_MetrcLicense": sObj.U_MetrcLicense,
+								// "U_MetrcLocation": sObj.U_MetrcLocation,
+								"U_PM": sObj.U_PM,
+								"U_Price": sObj.U_Price,
+								"U_SalesRep": sObj.U_SalesRep,
+								"U_SeedBana": sObj.U_SeedBana,
+								"U_Yellowhead": sObj.U_Yellowhead,
+								"U_SalesNote": sObj.U_SalesNote,
 								"U_PriceTier" :sObj.U_PriceTier,
 								"U_ManifestID" :sObj.U_ManifestID,
 								"U_LotNumber" : sObj.U_LotNumber
+								
+								
 							}],
 							"DocumentLinesBinAllocations": [{
 								"BinAbsEntry": Number(absEntry),
@@ -2885,11 +2901,11 @@ sap.ui.define([
 						var patchpayload = {
 							"Status": "bdsStatus_NotAccessible"
 						};
-						that.updateServiceLayerBatch("/b1s/v2/InventoryGenExits", function (resExit, sDataExit) {
+						that.updateServiecLayer("/b1s/v2/InventoryGenExits", function (resExit, sDataExit) {
 
-							that.updateServiceLayerBatch("/b1s/v2/BatchNumberDetails(" + sObj.BatchAbsEntry + ")", function (resEntry, sDataEntry) {
+							that.updateServiecLayer("/b1s/v2/BatchNumberDetails(" + sObj.BatchAbsEntry + ")", function (resEntry, sDataEntry) {
 
-								that.updateServiceLayerBatch("/b1s/v2/InventoryGenEntries", function (resEntry, sDataEntry) {
+								that.updateServiecLayer("/b1s/v2/InventoryGenEntries", function (resEntry, sDataEntry) {
 
 									var licenseNo = jsonModel.getProperty("/selectedLicense");
 									var filters = "?$filter=U_MetrcLicense eq " + "'" + licenseNo + "' and U_Phase eq 'Package' and Status eq '1'";
@@ -2907,10 +2923,10 @@ sap.ui.define([
 												"Status": "bdsStatus_Released"
 											};
 
-											that.updateServiceLayerBatch("/b1s/v2/BatchNumberDetails(" + Number(returnObj[0].BatchAbsEntry) + ")",
+											that.updateServiecLayer("/b1s/v2/BatchNumberDetails(" + Number(returnObj[0].BatchAbsEntry) + ")",
 												function (
 													resEntry, sDataEntry) {
-													that.updateServiceLayerBatch("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
+													that.updateServiecLayer("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
 														count--;
 														if (count === 0) {
 															changeItemDialog.setBusy(false);
@@ -2924,7 +2940,7 @@ sap.ui.define([
 												}, finalpatchpayload, "PATCH");
 
 										} else {
-											that.updateServiceLayerBatch("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
+											that.updateServiecLayer("/b1s/v2/ProductionOrders(" + Number(docNUM) + ")", function (res) {
 												count--;
 												if (count === 0) {
 													changeItemDialog.setBusy(false);
