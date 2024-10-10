@@ -2843,6 +2843,9 @@ sap.ui.define([
 								"U_BatAttr3": sObj.SourceUID,
 								"U_IsPackage": "YES",
 								"U_Phase": "Package",
+								"U_PriceTier" :sObj.U_PriceTier,
+								"U_ManifestID" :sObj.U_ManifestID,
+								"U_LotNumber" : sObj.U_LotNumber
 							}],
 							"DocumentLinesBinAllocations": [{
 								"BinAbsEntry": Number(absEntry),
@@ -3388,7 +3391,10 @@ sap.ui.define([
 							"U_SalesRep": sObj.U_SalesRep,
 							"U_SeedBana": sObj.U_SeedBana,
 							"U_Yellowhead": sObj.U_Yellowhead,
-							"U_SalesNote": sObj.U_SalesNote
+							"U_SalesNote": sObj.U_SalesNote,
+							"U_PriceTier" :sObj.U_PriceTier,
+							"U_ManifestID" :sObj.U_ManifestID,
+							"U_LotNumber" : sObj.U_LotNumber
 						}],
 						"DocumentLinesBinAllocations": [{
 							"BinAbsEntry": Number(locationID.split("-")[1]),
