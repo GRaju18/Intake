@@ -1385,6 +1385,7 @@ sap.ui.define([
 					"BatchNumber": sObj.NEWPKG, // <THIS IS TAG>
 					"Quantity": Number(sObj.RemainingOpenQuantity), //<THIS IS THE QTY OF CLONES>
 					//	"ManufacturerSerialNumber": sObj.HarvestName,
+					"InternalSerialNumber" : sObj.sourcePkgData.IntrSerial,
 					"U_BatAttr3": sObj.sourcePkgData.METRCUID,
 					"U_IsPackage": "YES",
 					"U_Phase": "Package",

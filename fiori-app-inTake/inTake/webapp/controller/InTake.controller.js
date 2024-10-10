@@ -2459,7 +2459,9 @@ sap.ui.define([
 							jsonModel.setProperty("/valueStatedriver", "None");
 							jsonModel.setProperty("/valueStateTextdriver", "");
 							jsonModel.setProperty("/driverDataBusy", false);
+							if(driverDetails.value.length > 0){
 							jsonModel.setProperty("/transTemplate/driverDetail", driverDetails.value[0].Code);
+							}
 							this.ondriverdetailsChange();
 						});
 						jsonModel.setProperty("/vehicleDataBusy", true);
@@ -2468,7 +2470,9 @@ sap.ui.define([
 							jsonModel.setProperty("/valueStatevehicle", "None");
 							jsonModel.setProperty("/valueStateTextvehicle", "");
 							jsonModel.setProperty("/vehicleDataBusy", false);
+							if(vehicleDetails.value.length > 0){
 							jsonModel.setProperty("/transTemplate/vehicleDetail", vehicleDetails.value[0].Code);
+							}
 
 						});
 					}
@@ -2835,6 +2839,7 @@ sap.ui.define([
 								"Quantity": sObj.Quantity, //<THIS IS THE QTY OF CLONES>
 								"Location": sObj.BinLocationCode, //<THIS IS FROM CLONE ROOM>
 								"ManufacturerSerialNumber": sObj.HarvestName,
+								"InternalSerialNumber" : sObj.IntrSerial,
 								"U_BatAttr3": sObj.SourceUID,
 								"U_IsPackage": "YES",
 								"U_Phase": "Package",
@@ -3366,6 +3371,7 @@ sap.ui.define([
 							"Location": locationID.replace(locationID.split("-")[0], "").replace("-", "").replace(locationID.split("-")[1], "").replace(
 								"-", ""), //<THIS IS FROM CLONE ROOM>
 							"ManufacturerSerialNumber": sObj.HarvestName,
+							"InternalSerialNumber" :sObj.IntrSerial,
 							"U_BatAttr3": sObj.METRCUID,
 							"U_IsPackage": "YES",
 							"U_Phase": "Package",
